@@ -6,7 +6,7 @@
 // @supportURL   https://github.com/MOTHblank/pokeidle-huntatlas/issues
 // @downloadURL  https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
 // @updateURL    https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
-// @version      1.6.0
+// @version      1.6.1
 // @description  Hunt finder with measured lead-Pokémon combat speed and personalized trainer XP/hour ranking.
 // @match        https://pokeidle.io/*
 // @match        https://www.pokeidle.io/*
@@ -32,6 +32,9 @@
 
     const FILTER_KEY =
         'moth-pokeidle-hunt-atlas-filters-v2';
+
+    const ENABLED_KEY =
+        'moth-pokeidle-hunt-atlas-enabled-v1';
 
     const PERF_KEY =
         'moth-pokeidle-hunt-atlas-performance-v2';
@@ -241,6 +244,436 @@
         }
     };
 
+
+    const TEXT = {
+        en: {
+            'title': 'Hunt Atlas',
+            'toggle.on': 'Atlas on',
+            'toggle.off': 'Atlas off',
+            'toggle.onTitle': 'Hunt Atlas is replacing the native map. Click to use PokéIdle’s map.',
+            'toggle.offTitle': 'PokéIdle’s native map is active. Click to enable Hunt Atlas.',
+            'filter.search': 'Search',
+            'filter.searchPlaceholder': 'Pokémon, hunt or region…',
+            'filter.region': 'Region',
+            'filter.allRegions': 'All regions',
+            'filter.level': 'Level',
+            'filter.min': 'Min',
+            'filter.max': 'Max',
+            'filter.minLevelAria': 'Minimum hunt level',
+            'filter.maxLevelAria': 'Maximum hunt level',
+            'filter.availability': 'Availability',
+            'filter.all': 'All',
+            'filter.unlocked': 'Unlocked',
+            'filter.locked': 'Locked',
+            'filter.type': 'Type',
+            'filter.allTypes': 'All types',
+            'filter.typeLoading': 'Type: loading…',
+            'filter.weakTo': 'Weak to',
+            'filter.anyWeakness': 'Any weakness',
+            'filter.weaknessLoading': 'Weakness: loading…',
+            'filter.collection': 'Collection',
+            'filter.caughtAndUncaught': 'Caught + uncaught',
+            'filter.uncaughtOnly': 'Uncaught only',
+            'filter.caughtOnly': 'Caught only',
+            'filter.sort': 'Sort',
+            'sort.xp': 'Best XP/hour',
+            'sort.npcDesc': 'NPC sell value · high first',
+            'sort.npcAsc': 'NPC sell value · low first',
+            'sort.playerDesc': 'Player Market · high first',
+            'sort.playerAsc': 'Player Market · low first',
+            'sort.matchup': 'Best matchup',
+            'sort.spawnDesc': 'Highest encounter rate',
+            'sort.levelAsc': 'Lowest hunt level',
+            'sort.levelDesc': 'Highest hunt level',
+            'sort.pokedex': 'Pokédex number',
+            'sort.name': 'Name A–Z',
+            'filter.clear': 'Clear filters',
+            'filter.defaults': 'Default filters',
+            'filter.changedOne': '1 filter changed from default',
+            'filter.changedMany': '{count} filters changed from default',
+            'footer.by': 'by MOTHblank',
+            'footer.play': 'MOTHblank on Google Play',
+            'footer.x': 'MOTHblank on X',
+            'footer.whatsapp': 'WhatsApp / Pix',
+            'footer.source': 'source code',
+            'capture.caught': 'caught',
+            'capture.notCaught': 'not caught',
+            'capture.typeUnknown': 'type ?',
+            'price.npc': 'NPC ~{value}',
+            'price.players': 'Players ~{value}',
+            'price.npcTip': 'NPC sale reference at the visible hunt level{plural} and quality 1.0{range} · actual captured Pokémon vary with quality; shiny ×10',
+            'price.playerTip': 'Recent non-shiny completed player Market sales · {count} {sample} · range {min}–{max}',
+            'price.sample': 'sample',
+            'price.samples': 'samples',
+            'price.range': ' · range {min}–{max}',
+            'matchup.immune': 'immune',
+            'matchup.weak': 'weak',
+            'matchup.resists': 'resists',
+            'matchup.neutral': 'neutral',
+            'matchup.deal': 'Deal {multiplier} · {relation}',
+            'matchup.take': 'Take {multiplier} · {relation}',
+            'matchup.dealTitle': '{lead}’s best known attack type ({type}) vs {species}: {multiplier}.',
+            'matchup.takeTitle': '{species}’s best STAB type ({type}) vs {lead}: {multiplier}.',
+            'hunt.level': 'Lv {level}',
+            'hunt.weight': '~{value}% weight',
+            'hunt.unlocked': 'unlocked',
+            'hunt.locked': 'locked',
+            'hunt.here': 'Here',
+            'hunt.go': 'Go',
+            'hunt.requiresLevel': 'Requires level {level}',
+            'hunt.current': 'Current hunt',
+            'hunt.travel': 'Travel to this hunt',
+            'hunt.measuredXp': 'measured {value} trainer XP/h',
+            'hunt.modeledXp': 'combat model {value} trainer XP/h',
+            'xp.waitingLead': 'Waiting for the active Pokémon before calculating trainer XP/hour.',
+            'xp.lead': '{name} Lv {level} · lead · power {power}',
+            'xp.warmStart': 'warm-started from nearest level',
+            'xp.kills': '{count} kills',
+            'xp.attacks': '{count} attacks',
+            'xp.cadence': '{seconds}s attack cadence{detail}',
+            'xp.throughput': ' (attack throughput)',
+            'xp.floor': ' (900ms floor)',
+            'xp.travel': '{seconds}s travel',
+            'xp.hpSamples': '{count} HP samples',
+            'xp.measuredHunt': '{count} measured hunt',
+            'xp.measuredHunts': '{count} measured hunts',
+            'xp.calibrating': 'combat model calibrating',
+            'xp.learning': 'learning this lead Pokémon: waiting for real attack and kill events',
+            'xp.killsPerHour': '{count} kills/h',
+            'xp.pokemonPerHour': '{value} Pokémon XP/h',
+            'xp.measuredShort': 'measured {value} XP/h',
+            'xp.modelShort': 'model {value} XP/h',
+            'xp.best': 'Best XP in current filters',
+            'xp.measuredTrainer': 'measured {value} trainer XP/h',
+            'xp.modeledTrainer': 'modeled {value} trainer XP/h',
+            'xp.noEstimate': 'No unlocked XP estimate matches the current filters.',
+            'xp.details': 'Details',
+            'xp.hideDetails': 'Hide details',
+            'xp.recommendationNote': '{lead} · recommendations respect the current Atlas filters.',
+            'xp.currentMeasured': ' · current measured {value} trainer XP/h',
+            'xp.currentModeled': ' · current modeled {value} trainer XP/h',
+            'xp.modelNote': ' · exact upstream XP/kill curve; movement, cadence, damage and kill speed come from this lead Pokémon’s real combat.',
+            'results.showMore': 'Show more · {count} Pokémon remaining',
+            'results.noMatch': 'No Pokémon match these filters. Use Clear filters to reset the Atlas.',
+            'results.waiting': 'Waiting for PokéIdle hunt data. Reload the page once after installing Hunt Atlas if this remains empty.',
+            'results.count': '{pokemon} Pokémon · {hunts} hunts',
+            'results.countPartial': '{shown}/{pokemon} Pokémon · {hunts} hunts',
+            'status.waitingGameData': 'Waiting for game data…',
+            'status.cachedCatalog': 'Using cached hunt catalog until live state arrives.',
+            'status.entered': 'Entered {hunt}.',
+            'status.huntsLoaded': '{count} hunt regions loaded.',
+            'status.gameNotReady': 'Game connection is not ready yet.',
+            'status.traveling': 'Traveling to {hunt}…',
+            'status.notAccepted': 'PokéIdle did not accept {hunt}. It may still be locked or hunt switching may be on cooldown.',
+            'status.couldNotSend': 'Could not send hunt selection.',
+            'status.huntLocked': '{hunt} is locked — requires level {level}.',
+            'status.alreadyHere': 'Already hunting in {hunt}.',
+            'status.loadingTypes': ' · loading type data',
+            'status.typesUnavailable': ' · type data unavailable',
+            'status.marketSampling': ' · sampling Market prices',
+            'type.NORMAL': 'Normal',
+            'type.FIRE': 'Fire',
+            'type.WATER': 'Water',
+            'type.ELECTRIC': 'Electric',
+            'type.GRASS': 'Grass',
+            'type.ICE': 'Ice',
+            'type.FIGHTING': 'Fighting',
+            'type.POISON': 'Poison',
+            'type.GROUND': 'Ground',
+            'type.FLYING': 'Flying',
+            'type.PSYCHIC': 'Psychic',
+            'type.BUG': 'Bug',
+            'type.ROCK': 'Rock',
+            'type.GHOST': 'Ghost',
+            'type.DRAGON': 'Dragon',
+            'type.DARK': 'Dark',
+            'type.STEEL': 'Steel',
+            'type.FAIRY': 'Fairy'
+        },
+        'pt-BR': {
+            'title': 'Hunt Atlas',
+            'toggle.on': 'Atlas ligado',
+            'toggle.off': 'Atlas desligado',
+            'toggle.onTitle': 'O Hunt Atlas está substituindo o mapa padrão. Clique para usar o mapa do PokéIdle.',
+            'toggle.offTitle': 'O mapa padrão do PokéIdle está ativo. Clique para ativar o Hunt Atlas.',
+            'filter.search': 'Buscar',
+            'filter.searchPlaceholder': 'Pokémon, hunt ou região…',
+            'filter.region': 'Região',
+            'filter.allRegions': 'Todas as regiões',
+            'filter.level': 'Nível',
+            'filter.min': 'Mín.',
+            'filter.max': 'Máx.',
+            'filter.minLevelAria': 'Nível mínimo da hunt',
+            'filter.maxLevelAria': 'Nível máximo da hunt',
+            'filter.availability': 'Disponibilidade',
+            'filter.all': 'Todas',
+            'filter.unlocked': 'Liberadas',
+            'filter.locked': 'Bloqueadas',
+            'filter.type': 'Tipo',
+            'filter.allTypes': 'Todos os tipos',
+            'filter.typeLoading': 'Tipo: carregando…',
+            'filter.weakTo': 'Fraco contra',
+            'filter.anyWeakness': 'Qualquer fraqueza',
+            'filter.weaknessLoading': 'Fraqueza: carregando…',
+            'filter.collection': 'Coleção',
+            'filter.caughtAndUncaught': 'Capturados + não capturados',
+            'filter.uncaughtOnly': 'Só não capturados',
+            'filter.caughtOnly': 'Só capturados',
+            'filter.sort': 'Ordenar',
+            'sort.xp': 'Melhor XP/hora',
+            'sort.npcDesc': 'Venda ao NPC · maior primeiro',
+            'sort.npcAsc': 'Venda ao NPC · menor primeiro',
+            'sort.playerDesc': 'Mercado de jogadores · maior primeiro',
+            'sort.playerAsc': 'Mercado de jogadores · menor primeiro',
+            'sort.matchup': 'Melhor matchup',
+            'sort.spawnDesc': 'Maior chance de encontro',
+            'sort.levelAsc': 'Menor nível de hunt',
+            'sort.levelDesc': 'Maior nível de hunt',
+            'sort.pokedex': 'Número da Pokédex',
+            'sort.name': 'Nome A–Z',
+            'filter.clear': 'Limpar filtros',
+            'filter.defaults': 'Filtros padrão',
+            'filter.changedOne': '1 filtro alterado',
+            'filter.changedMany': '{count} filtros alterados',
+            'footer.by': 'por MOTHblank',
+            'footer.play': 'MOTHblank no Google Play',
+            'footer.x': 'MOTHblank no X',
+            'footer.whatsapp': 'WhatsApp / Pix',
+            'footer.source': 'código-fonte',
+            'capture.caught': 'capturado',
+            'capture.notCaught': 'não capturado',
+            'capture.typeUnknown': 'tipo ?',
+            'price.npc': 'NPC ~{value}',
+            'price.players': 'Jogadores ~{value}',
+            'price.npcTip': 'Referência de venda ao NPC no{plural} nível{plural} de hunt visível{plural} e qualidade 1,0{range} · o valor real varia com a qualidade; shiny ×10',
+            'price.playerTip': 'Vendas recentes concluídas de Pokémon não shiny no Mercado de jogadores · {count} {sample} · faixa {min}–{max}',
+            'price.sample': 'amostra',
+            'price.samples': 'amostras',
+            'price.range': ' · faixa {min}–{max}',
+            'matchup.immune': 'imune',
+            'matchup.weak': 'fraco',
+            'matchup.resists': 'resiste',
+            'matchup.neutral': 'neutro',
+            'matchup.deal': 'Causa {multiplier} · {relation}',
+            'matchup.take': 'Recebe {multiplier} · {relation}',
+            'matchup.dealTitle': 'Melhor tipo de ataque conhecido de {lead} ({type}) contra {species}: {multiplier}.',
+            'matchup.takeTitle': 'Melhor STAB de {species} ({type}) contra {lead}: {multiplier}.',
+            'hunt.level': 'Nv {level}',
+            'hunt.weight': '~{value}% peso',
+            'hunt.unlocked': 'liberada',
+            'hunt.locked': 'bloqueada',
+            'hunt.here': 'Aqui',
+            'hunt.go': 'Ir',
+            'hunt.requiresLevel': 'Requer nível {level}',
+            'hunt.current': 'Hunt atual',
+            'hunt.travel': 'Ir para esta hunt',
+            'hunt.measuredXp': 'medido {value} XP de treinador/h',
+            'hunt.modeledXp': 'modelo de combate {value} XP de treinador/h',
+            'xp.waitingLead': 'Aguardando o Pokémon ativo para calcular XP de treinador/hora.',
+            'xp.lead': '{name} Nv {level} · líder · poder {power}',
+            'xp.warmStart': 'iniciado com dados do nível mais próximo',
+            'xp.kills': '{count} abates',
+            'xp.attacks': '{count} ataques',
+            'xp.cadence': '{seconds}s entre ataques{detail}',
+            'xp.throughput': ' (ritmo observado)',
+            'xp.floor': ' (piso de 900ms)',
+            'xp.travel': '{seconds}s de deslocamento',
+            'xp.hpSamples': '{count} amostras de HP',
+            'xp.measuredHunt': '{count} hunt medida',
+            'xp.measuredHunts': '{count} hunts medidas',
+            'xp.calibrating': 'modelo de combate calibrando',
+            'xp.learning': 'aprendendo este Pokémon líder: aguardando ataques e abates reais',
+            'xp.killsPerHour': '{count} abates/h',
+            'xp.pokemonPerHour': '{value} XP de Pokémon/h',
+            'xp.measuredShort': 'medido {value} XP/h',
+            'xp.modelShort': 'modelo {value} XP/h',
+            'xp.best': 'Melhor XP nos filtros atuais',
+            'xp.measuredTrainer': 'medido {value} XP de treinador/h',
+            'xp.modeledTrainer': 'modelado {value} XP de treinador/h',
+            'xp.noEstimate': 'Nenhuma estimativa de XP liberada corresponde aos filtros atuais.',
+            'xp.details': 'Detalhes',
+            'xp.hideDetails': 'Ocultar detalhes',
+            'xp.recommendationNote': '{lead} · recomendações respeitam os filtros atuais do Atlas.',
+            'xp.currentMeasured': ' · atual medido {value} XP de treinador/h',
+            'xp.currentModeled': ' · atual modelado {value} XP de treinador/h',
+            'xp.modelNote': ' · curva oficial de XP/abate; deslocamento, cadência, dano e velocidade de abate vêm do combate real deste Pokémon líder.',
+            'results.showMore': 'Mostrar mais · restam {count} Pokémon',
+            'results.noMatch': 'Nenhum Pokémon corresponde aos filtros. Use Limpar filtros para redefinir o Atlas.',
+            'results.waiting': 'Aguardando os dados de hunts do PokéIdle. Recarregue a página uma vez após instalar o Hunt Atlas se isto continuar vazio.',
+            'results.count': '{pokemon} Pokémon · {hunts} hunts',
+            'results.countPartial': '{shown}/{pokemon} Pokémon · {hunts} hunts',
+            'status.waitingGameData': 'Aguardando dados do jogo…',
+            'status.cachedCatalog': 'Usando o catálogo de hunts em cache até chegarem dados atuais.',
+            'status.entered': 'Entrou em {hunt}.',
+            'status.huntsLoaded': '{count} regiões de hunt carregadas.',
+            'status.gameNotReady': 'A conexão com o jogo ainda não está pronta.',
+            'status.traveling': 'Indo para {hunt}…',
+            'status.notAccepted': 'O PokéIdle não aceitou {hunt}. A área pode estar bloqueada ou a troca de hunt pode estar em cooldown.',
+            'status.couldNotSend': 'Não foi possível enviar a troca de hunt.',
+            'status.huntLocked': '{hunt} está bloqueada — requer nível {level}.',
+            'status.alreadyHere': 'Você já está caçando em {hunt}.',
+            'status.loadingTypes': ' · carregando tipos',
+            'status.typesUnavailable': ' · dados de tipo indisponíveis',
+            'status.marketSampling': ' · amostrando preços do Mercado',
+            'type.NORMAL': 'Normal',
+            'type.FIRE': 'Fogo',
+            'type.WATER': 'Água',
+            'type.ELECTRIC': 'Elétrico',
+            'type.GRASS': 'Planta',
+            'type.ICE': 'Gelo',
+            'type.FIGHTING': 'Lutador',
+            'type.POISON': 'Veneno',
+            'type.GROUND': 'Terra',
+            'type.FLYING': 'Voador',
+            'type.PSYCHIC': 'Psíquico',
+            'type.BUG': 'Inseto',
+            'type.ROCK': 'Pedra',
+            'type.GHOST': 'Fantasma',
+            'type.DRAGON': 'Dragão',
+            'type.DARK': 'Sombrio',
+            'type.STEEL': 'Aço',
+            'type.FAIRY': 'Fada'
+        }
+    };
+
+    function currentLocale() {
+        let gameLanguage = null;
+
+        try {
+            gameLanguage =
+                localStorage.getItem(
+                    'idioma'
+                );
+        } catch {}
+
+        if (
+            gameLanguage === 'pt'
+        ) {
+            return 'pt-BR';
+        }
+
+        if (
+            gameLanguage === 'en'
+        ) {
+            return 'en';
+        }
+
+        const htmlLanguage =
+            String(
+                document.documentElement
+                    ?.lang ||
+                ''
+            ).toLowerCase();
+
+        if (
+            htmlLanguage.startsWith(
+                'pt'
+            )
+        ) {
+            return 'pt-BR';
+        }
+
+        if (
+            htmlLanguage.startsWith(
+                'en'
+            )
+        ) {
+            return 'en';
+        }
+
+        const browserLanguage =
+            String(
+                navigator.language ||
+                ''
+            ).toLowerCase();
+
+        return browserLanguage.startsWith(
+            'pt'
+        )
+            ? 'pt-BR'
+            : 'en';
+    }
+
+    function tr(
+        key,
+        params = null
+    ) {
+        const dictionary =
+            TEXT[currentLocale()] ||
+            TEXT.en;
+
+        let value =
+            dictionary[key] ??
+            TEXT.en[key] ??
+            key;
+
+        if (!params) {
+            return value;
+        }
+
+        return value.replace(
+            /\{(\w+)\}/g,
+            (
+                whole,
+                name
+            ) =>
+                params[name] !==
+                    undefined
+                    ? String(
+                        params[name]
+                    )
+                    : whole
+        );
+    }
+
+    function typeLabel(
+        type
+    ) {
+        return tr(
+            'type.' +
+            String(
+                type ||
+                ''
+            ).toUpperCase()
+        );
+    }
+
+    function localizedNumber(
+        value
+    ) {
+        return Number(
+            value ||
+            0
+        ).toLocaleString(
+            currentLocale()
+        );
+    }
+
+    function loadAtlasEnabled() {
+        try {
+            return (
+                localStorage.getItem(
+                    ENABLED_KEY
+                ) !== '0'
+            );
+        } catch {
+            return true;
+        }
+    }
+
+    function saveAtlasEnabled(
+        enabled
+    ) {
+        try {
+            localStorage.setItem(
+                ENABLED_KEY,
+                enabled
+                    ? '1'
+                    : '0'
+            );
+        } catch {}
+    }
+
     const q =
         (selector, root = document) =>
             root.querySelector(selector);
@@ -293,6 +726,10 @@
         lockOverrides: new Map(),
 
         drawerOpen: false,
+        atlasEnabled:
+            loadAtlasEnabled(),
+        nativeMapTitle: null,
+        lastLocale: null,
         resultLimit: 120,
         xpDetailsOpen: false,
         mapObserver: null,
@@ -303,7 +740,11 @@
         activeSocket: null,
         pendingTravel: null,
 
-        status: 'Waiting for game data…',
+        status: {
+            key:
+                'status.waitingGameData',
+            params: {}
+        },
 
         filters: loadFilters(),
 
@@ -386,6 +827,32 @@
             JSON.stringify(
                 state.filters
             )
+        );
+    }
+
+    function setStatus(
+        key,
+        params = {}
+    ) {
+        state.status = {
+            key,
+            params
+        };
+    }
+
+    function localizedStatus() {
+        if (
+            typeof state.status ===
+                'string'
+        ) {
+            return state.status;
+        }
+
+        return tr(
+            state.status?.key ||
+                'status.waitingGameData',
+            state.status?.params ||
+                {}
         );
     }
 
