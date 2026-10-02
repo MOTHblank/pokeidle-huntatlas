@@ -13,6 +13,7 @@ O Hunt Atlas mostra informações úteis diretamente ao lado de cada Pokémon, c
 5. Abra ou recarregue [PokéIdle](https://pokeidle.io/app).
 6. Abra **Mapa**. O Hunt Atlas aparecerá no lugar do mapa padrão.
 
+OBS: No Chrome, você talvez tenha que mexer nas configurações da extensão para permitir scripts de usuário.
 Para voltar ao mapa original, use o botão **Atlas ligado/desligado** no topo da janela. A escolha fica salva.
 
 ### Como usar
@@ -75,6 +76,7 @@ Hunt Atlas shows useful information directly beside each Pokémon, including typ
 5. Open or reload [PokéIdle](https://pokeidle.io/app).
 6. Open **Map**. Hunt Atlas will appear in place of the default map.
 
+PS: On Chrome, you may need to change extension configs to allow user scripts.
 To use the original map again, use the **Atlas on/off** button at the top of the window. Your choice is saved.
 
 ### How to use
