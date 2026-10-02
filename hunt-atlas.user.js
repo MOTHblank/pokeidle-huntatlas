@@ -6409,6 +6409,24 @@
                 display: none !important;
             }
 
+            #mha-map-toggle {
+                margin-left: 8px;
+                padding: 3px 8px;
+                border: 1px solid rgba(255,255,255,.14);
+                border-radius: 999px;
+                background: rgba(255,255,255,.06);
+                color: #a99fa3;
+                cursor: pointer;
+                font: 700 9px/1 system-ui,sans-serif;
+                white-space: nowrap;
+            }
+
+            #mha-map-toggle[data-enabled="1"] {
+                border-color: rgba(104,190,130,.28);
+                background: rgba(104,190,130,.10);
+                color: #a8ddb7;
+            }
+
             #modal .modal-caixa[data-mha-atlas-active="1"] {
                 width: min(1180px, 96vw) !important;
                 max-width: 96vw !important;
@@ -6991,15 +7009,136 @@
         );
     }
 
-    function cleanupMapIntegration() {
-        q(
-            '#modal .modal-caixa'
-        )?.removeAttribute(
+    function restoreNativeMapView() {
+        const box =
+            q(
+                '#modal .modal-caixa'
+            );
+
+        box?.removeAttribute(
             'data-mha-atlas-active'
         );
 
+        const drawer =
+            q(
+                '#' + DRAWER_ID
+            );
+
+        if (drawer) {
+            drawer.hidden =
+                true;
+        }
+
+        const title =
+            q('#modal-titulo');
+
+        if (
+            title &&
+            state.nativeMapTitle
+        ) {
+            title.textContent =
+                state.nativeMapTitle;
+        }
+    }
+
+    function cleanupMapIntegration() {
+        restoreNativeMapView();
+
+        q(
+            '#mha-map-toggle'
+        )?.remove();
+
         state.drawerOpen =
             false;
+        state.nativeMapTitle =
+            null;
+    }
+
+    function ensureMapToggle() {
+        if (!isMapModalOpen()) {
+            return null;
+        }
+
+        const title =
+            q('#modal-titulo');
+
+        if (!title) {
+            return null;
+        }
+
+        let toggle =
+            q('#mha-map-toggle');
+
+        if (
+            !toggle ||
+            toggle.parentElement !==
+                title.parentElement
+        ) {
+            toggle?.remove();
+
+            toggle =
+                document.createElement(
+                    'button'
+                );
+
+            toggle.type =
+                'button';
+            toggle.id =
+                'mha-map-toggle';
+
+            title.insertAdjacentElement(
+                'afterend',
+                toggle
+            );
+
+            toggle.addEventListener(
+                'click',
+                () => {
+                    state.atlasEnabled =
+                        !state.atlasEnabled;
+
+                    saveAtlasEnabled(
+                        state.atlasEnabled
+                    );
+
+                    if (
+                        !state.atlasEnabled
+                    ) {
+                        restoreNativeMapView();
+                    }
+
+                    scheduleMapSync();
+                }
+            );
+        }
+
+        toggle.dataset.enabled =
+            state.atlasEnabled
+                ? '1'
+                : '0';
+
+        toggle.textContent =
+            tr(
+                state.atlasEnabled
+                    ? 'toggle.on'
+                    : 'toggle.off'
+            );
+
+        toggle.title =
+            tr(
+                state.atlasEnabled
+                    ? 'toggle.onTitle'
+                    : 'toggle.offTitle'
+            );
+
+        toggle.setAttribute(
+            'aria-pressed',
+            state.atlasEnabled
+                ? 'true'
+                : 'false'
+        );
+
+        return toggle;
     }
 
     function scheduleMapSync() {
@@ -7023,13 +7162,36 @@
                 const wasOpen =
                     state.drawerOpen;
 
-                state.drawerOpen =
-                    open;
-
                 if (!open) {
                     cleanupMapIntegration();
                     return;
                 }
+
+                const title =
+                    q('#modal-titulo');
+
+                if (
+                    title &&
+                    title.textContent !==
+                        tr('title')
+                ) {
+                    state.nativeMapTitle =
+                        title.textContent;
+                }
+
+                ensureMapToggle();
+
+                if (
+                    !state.atlasEnabled
+                ) {
+                    state.drawerOpen =
+                        false;
+                    restoreNativeMapView();
+                    return;
+                }
+
+                state.drawerOpen =
+                    true;
 
                 if (!wasOpen) {
                     ensureTypeData();
@@ -7125,7 +7287,8 @@
     function ensureDrawer() {
         if (
             !document.body ||
-            !isMapModalOpen()
+            !isMapModalOpen() ||
+            !state.atlasEnabled
         ) {
             return null;
         }
@@ -7155,13 +7318,9 @@
         const modalTitle =
             q('#modal-titulo');
 
-        if (
-            modalTitle &&
-            modalTitle.textContent !==
-                'Hunt Atlas'
-        ) {
+        if (modalTitle) {
             modalTitle.textContent =
-                'Hunt Atlas';
+                tr('title');
         }
 
         let drawer =
@@ -8290,9 +8449,19 @@
                 if (
                     isMapModalOpen()
                 ) {
-                    state.drawerOpen =
-                        true;
-                    renderDrawer();
+                    ensureMapToggle();
+
+                    if (
+                        state.atlasEnabled
+                    ) {
+                        state.drawerOpen =
+                            true;
+                        renderDrawer();
+                    } else {
+                        state.drawerOpen =
+                            false;
+                        restoreNativeMapView();
+                    }
                 } else {
                     cleanupMapIntegration();
                 }
@@ -8313,9 +8482,19 @@
                 if (
                     isMapModalOpen()
                 ) {
-                    state.drawerOpen =
-                        true;
-                    renderDrawer();
+                    ensureMapToggle();
+
+                    if (
+                        state.atlasEnabled
+                    ) {
+                        state.drawerOpen =
+                            true;
+                        renderDrawer();
+                    } else {
+                        state.drawerOpen =
+                            false;
+                        restoreNativeMapView();
+                    }
                 } else {
                     cleanupMapIntegration();
                 }
