@@ -5071,13 +5071,124 @@
         );
     }
 
-    function npcSellValueForSpecies(
+    function npcBaseSellValueForSpecies(
         species
     ) {
         return Number(
             speciesCombatMeta(
                 species?.id
             )?.sellValue ||
+            0
+        );
+    }
+
+    function npcSellValueAtLevel(
+        species,
+        level
+    ) {
+        const base =
+            npcBaseSellValueForSpecies(
+                species
+            );
+
+        const huntLevel =
+            Math.max(
+                1,
+                Number(
+                    level ||
+                    1
+                )
+            );
+
+        if (base <= 0) {
+            return 0;
+        }
+
+        /*
+         * PokéIdle's shared sell-value.mjs:
+         *   base × (1 + level / 50) × quality
+         *
+         * Atlas has species/hunt data rather than a captured individual's
+         * quality, so use the neutral reference quality 1.0.
+         * Shiny is intentionally not included here (actual sale ×10).
+         */
+        return Math.max(
+            1,
+            Math.floor(
+                base *
+                (
+                    1 +
+                    huntLevel /
+                        50
+                )
+            )
+        );
+    }
+
+    function npcSellStatsForSpecies(
+        species
+    ) {
+        const values =
+            (
+                species?.hunts ||
+                []
+            )
+                .map(
+                    item =>
+                        npcSellValueAtLevel(
+                            species,
+                            item?.hunt?.nivel
+                        )
+                )
+                .filter(
+                    value =>
+                        value > 0
+                );
+
+        if (!values.length) {
+            const base =
+                npcBaseSellValueForSpecies(
+                    species
+                );
+
+            return base > 0
+                ? {
+                    average: base,
+                    min: base,
+                    max: base,
+                    count: 1
+                }
+                : null;
+        }
+
+        return {
+            average:
+                values.reduce(
+                    (sum, value) =>
+                        sum + value,
+                    0
+                ) /
+                values.length,
+            min:
+                Math.min(
+                    ...values
+                ),
+            max:
+                Math.max(
+                    ...values
+                ),
+            count:
+                values.length
+        };
+    }
+
+    function npcSellValueForSpecies(
+        species
+    ) {
+        return Number(
+            npcSellStatsForSpecies(
+                species
+            )?.average ||
             0
         );
     }
@@ -6951,20 +7062,31 @@
             matchup?.lead?.nome ||
             'Lead';
 
-        const npcSellValue =
-            npcSellValueForSpecies(
+        const npcStats =
+            npcSellStatsForSpecies(
                 species
             );
 
         const npcMarkup =
-            npcSellValue > 0
+            npcStats?.average > 0
                 ? `
                     <span
                         class="mha-npc-value"
-                        title="Guaranteed NPC sell value"
-                    >NPC ${escapeHtml(
+                        title="${escapeHtml(
+                            'NPC sale reference at the visible hunt level' +
+                            (npcStats.count === 1 ? '' : 's') +
+                            ' and quality 1.0' +
+                            (npcStats.min !== npcStats.max
+                                ? ' · range ' +
+                                  Math.round(npcStats.min).toLocaleString() +
+                                  '–' +
+                                  Math.round(npcStats.max).toLocaleString()
+                                : '') +
+                            ' · actual captured Pokémon vary with quality; shiny ×10'
+                        )}"
+                    >NPC ~${escapeHtml(
                         formatRate(
-                            npcSellValue
+                            npcStats.average
                         )
                     )}</span>
                 `
