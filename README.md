@@ -12,20 +12,21 @@ Install `hunt-atlas.user.js` with Tampermonkey. The userscript points its update
 - Includes a persistent **Atlas on/off** toggle in the map header; disabling it instantly restores PokéIdle's native map.
 - Search and filter hunts by region, level, type, weakness, availability, and collection status.
 - Direct travel to available hunts.
-- Personalized trainer XP/hour estimates from observed combat data.
+- Personalized trainer XP/hour recommendations, with a clearly labeled best hunt and Top 5 ranking from the current filters.
 - Bidirectional type matchup indicators for the current lead Pokémon.
-- NPC sell-value estimates at each species' visible hunt level(s).
-- Recent completed player-Market averages for non-shiny Pokémon.
-- Sorting by XP/hour, NPC sell value, player Market value, matchup, encounter rate, hunt level, Pokédex number, or name.
+- **MKT** values for estimated NPC sale price at each species' visible hunt level(s).
+- **RMT** values for recent completed player-Market averages for non-shiny Pokémon.
+- Sorting by a compact field selector (XP/hour, Name, Pokédex number, Level, MKT, RMT, Matchup, Encounter rate) plus a separate ↑/↓ direction toggle.
 - Wide responsive layout with compact filters and multi-column results on desktop.
+- MOTHblank/social/source links are displayed beside the Hunt Atlas title.
 - English and **pt-BR** UI localization. Hunt Atlas follows PokéIdle's selected interface language automatically.
 - Persistent filters and cached combat/Market data.
 
 ## Prices
 
-**NPC** is the estimated sale value of a Pokémon caught at the visible hunt level, using PokéIdle's NPC formula with reference quality **1.0**. Actual captured Pokémon vary with quality, and shiny Pokémon sell for more.
+**MKT** is the estimated sale value to the NPC for a Pokémon caught at the visible hunt level, using PokéIdle's NPC formula with reference quality **1.0**. Actual captured Pokémon vary with quality, and shiny Pokémon sell for more.
 
-**Players** is a separate observed value. Hunt Atlas samples recent completed **gold** sales of non-shiny Pokémon from PokéIdle's global player Market history and caches the result. Species with no recent observed sale may show no player-Market value.
+**RMT** is the observed player-market value. Hunt Atlas samples recent completed **gold** sales of non-shiny Pokémon from PokéIdle's global player Market history and caches the result. Both MKT and RMT badges stay visible; unavailable values are shown as `—`.
 
 ## Author
 
