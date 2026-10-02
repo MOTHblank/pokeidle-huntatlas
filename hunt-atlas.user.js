@@ -49,7 +49,10 @@
         7 * 24 * 60 * 60 * 1000;
 
     const MARKET_HISTORY_MAX_PAGES =
-        8;
+        12;
+
+    const MARKET_LISTING_MAX_PAGES =
+        50;
 
     const BUTTON_ID =
         'moth-hunt-atlas-button';
@@ -306,7 +309,8 @@
             'price.npcTip': 'MKT: NPC sale reference at the visible hunt level{plural} and quality 1.0{range} · actual captured Pokémon vary with quality; shiny ×10',
             'price.npcMissingTip': 'MKT: NPC sell value is not available for this species yet.',
             'price.playerTip': 'RMT: recent non-shiny completed player Market sales · {count} {sample} · range {min}–{max}',
-            'price.playerMissingTip': 'RMT: no recent completed player-Market sale was found in the sampled history.',
+            'price.playerListingTip': 'RMT: lowest current gold listing in the player Market. Completed-sale averages are preferred when available.',
+            'price.playerMissingTip': 'RMT: no recent completed sale or current gold listing was found.',
             'price.sample': 'sample',
             'price.samples': 'samples',
             'price.range': ' · range {min}–{max}',
@@ -459,7 +463,8 @@
             'price.npcTip': 'MKT: referência de venda ao NPC no{plural} nível{plural} de hunt visível{plural} e qualidade 1,0{range} · o valor real varia com a qualidade; shiny ×10',
             'price.npcMissingTip': 'MKT: o valor de venda ao NPC ainda não está disponível para esta espécie.',
             'price.playerTip': 'RMT: vendas recentes concluídas de Pokémon não shiny no Mercado de jogadores · {count} {sample} · faixa {min}–{max}',
-            'price.playerMissingTip': 'RMT: nenhuma venda recente concluída no Mercado de jogadores foi encontrada na amostra.',
+            'price.playerListingTip': 'RMT: menor anúncio atual em ouro no Mercado de jogadores. A média de vendas concluídas tem prioridade quando disponível.',
+            'price.playerMissingTip': 'RMT: nenhuma venda concluída recente nem anúncio atual em ouro foi encontrado.',
             'price.sample': 'amostra',
             'price.samples': 'amostras',
             'price.range': ' · faixa {min}–{max}',
@@ -712,6 +717,8 @@
                 ? 'cached'
                 : 'idle',
         marketFetch: null,
+        marketListingFetch:
+            null,
 
         combatTargets: new Map(),
         speciesCombat: new Map(),
@@ -2640,6 +2647,18 @@
 
         if (
             message?.t ===
+                'market' &&
+            message?.aba ===
+                'especies' &&
+            state.marketListingFetch
+        ) {
+            handleMarketSpeciesSummary(
+                message
+            );
+        }
+
+        if (
+            message?.t ===
                 'welcome'
         ) {
             if (
@@ -2876,20 +2895,29 @@
                     lastSaleAt:
                         sample.lastSaleAt,
                     sampledAt:
-                        now
+                        now,
+                    source:
+                        'sales'
                 }
             );
         }
 
-        state.marketCacheSavedAt =
-            now;
-        state.marketStatus =
-            'ready';
         state.marketFetch =
             null;
 
-        saveMarketCache();
-        queueRender();
+        startMarketListingFetch();
+
+        if (
+            !state.marketListingFetch
+        ) {
+            state.marketCacheSavedAt =
+                now;
+            state.marketStatus =
+                'ready';
+
+            saveMarketCache();
+            queueRender();
+        }
     }
 
     function requestMarketHistoryPage() {
@@ -2939,9 +2967,236 @@
         }
     }
 
+    function requestMarketSpeciesPage() {
+        const fetch =
+            state.marketListingFetch;
+
+        if (
+            !fetch ||
+            !state.activeSocket ||
+            state.activeSocket
+                .readyState !==
+                page.WebSocket.OPEN
+        ) {
+            return false;
+        }
+
+        try {
+            state.activeSocket.send(
+                JSON.stringify({
+                    t:
+                        'market.especies',
+                    tipo:
+                        'pokemon',
+                    moeda:
+                        'gold',
+                    busca:
+                        '',
+                    ordem:
+                        'baratos',
+                    criterios:
+                        [],
+                    elemento:
+                        '',
+                    soShiny:
+                        false,
+                    soP5:
+                        false,
+                    soTmElemental:
+                        false,
+                    soTmAoe:
+                        false,
+                    semOutland:
+                        false,
+                    nivelMin:
+                        '',
+                    nivelMax:
+                        '',
+                    potenciaMin:
+                        '',
+                    potenciaMax:
+                        '',
+                    ivMin:
+                        '',
+                    ivMax:
+                        '',
+                    qualidadeMin:
+                        '',
+                    qualidadeMax:
+                        '',
+                    notaMin:
+                        '',
+                    notaMax:
+                        '',
+                    pagina:
+                        fetch.page
+                })
+            );
+
+            return true;
+        } catch {
+            state.marketListingFetch =
+                null;
+            return false;
+        }
+    }
+
+    function startMarketListingFetch() {
+        if (
+            state.marketListingFetch ||
+            !state.activeSocket ||
+            state.activeSocket
+                .readyState !==
+                page.WebSocket.OPEN
+        ) {
+            return;
+        }
+
+        state.marketListingFetch = {
+            page: 0
+        };
+
+        requestMarketSpeciesPage();
+    }
+
+    function finishMarketListingFetch() {
+        state.marketListingFetch =
+            null;
+        state.marketCacheSavedAt =
+            Date.now();
+        state.marketStatus =
+            'ready';
+
+        saveMarketCache();
+        queueRender();
+    }
+
+    function handleMarketSpeciesSummary(
+        message
+    ) {
+        const fetch =
+            state.marketListingFetch;
+
+        if (
+            !fetch ||
+            Number(
+                message?.pagina ??
+                0
+            ) !==
+                fetch.page
+        ) {
+            return;
+        }
+
+        for (
+            const row of
+            message.linhas ||
+            []
+        ) {
+            const id =
+                Number(
+                    row?.speciesId
+                );
+
+            const price =
+                Number(
+                    row?.minGold
+                );
+
+            if (
+                !Number.isFinite(id) ||
+                id <= 0 ||
+                !Number.isFinite(price) ||
+                price <= 0
+            ) {
+                continue;
+            }
+
+            const key =
+                'id:' + id;
+
+            const existing =
+                state.marketValues.get(
+                    key
+                );
+
+            if (
+                existing?.source ===
+                    'sales' ||
+                (
+                    existing?.count &&
+                    existing.count > 0
+                )
+            ) {
+                continue;
+            }
+
+            state.marketValues.set(
+                key,
+                {
+                    average:
+                        price,
+                    count: 0,
+                    min:
+                        price,
+                    max:
+                        price,
+                    source:
+                        'listing',
+                    sampledAt:
+                        Date.now()
+                }
+            );
+        }
+
+        const total =
+            Number(
+                message.total
+            );
+
+        const perPage =
+            Number(
+                message.porPagina ||
+                24
+            );
+
+        const hasMore =
+            Number.isFinite(total)
+                ? (
+                    fetch.page + 1 <
+                    Math.ceil(
+                        total /
+                        Math.max(
+                            1,
+                            perPage
+                        )
+                    )
+                )
+                : (
+                    Array.isArray(
+                        message.linhas
+                    ) &&
+                    message.linhas.length >=
+                        perPage
+                );
+
+        if (
+            hasMore &&
+            fetch.page + 1 <
+                MARKET_LISTING_MAX_PAGES
+        ) {
+            fetch.page++;
+            requestMarketSpeciesPage();
+            return;
+        }
+
+        finishMarketListingFetch();
+    }
+
     function ensureMarketValues() {
         if (
             state.marketFetch ||
+            state.marketListingFetch ||
             (
                 state.marketCacheSavedAt &&
                 Date.now() -
@@ -3035,9 +3290,12 @@
                         null;
 
                     if (
-                        state.marketFetch
+                        state.marketFetch ||
+                        state.marketListingFetch
                     ) {
                         state.marketFetch =
+                            null;
+                        state.marketListingFetch =
                             null;
                         state.marketStatus =
                             state.marketValues.size
@@ -8230,38 +8488,46 @@
                 <span
                     class="mha-market"
                     title="${escapeHtml(
-                        market?.count
+                        market?.source ===
+                            'listing'
                             ? tr(
-                                'price.playerTip',
-                                {
-                                    count:
-                                        market.count,
-                                    sample:
-                                        tr(
-                                            market.count === 1
-                                                ? 'price.sample'
-                                                : 'price.samples'
-                                        ),
-                                    min:
-                                        localizedNumber(
-                                            Math.round(
-                                                market.min
-                                            )
-                                        ),
-                                    max:
-                                        localizedNumber(
-                                            Math.round(
-                                                market.max
-                                            )
-                                        )
-                                }
+                                'price.playerListingTip'
                             )
-                            : tr(
-                                'price.playerMissingTip'
-                            )
+                            : market?.count
+                                ? tr(
+                                    'price.playerTip',
+                                    {
+                                        count:
+                                            market.count,
+                                        sample:
+                                            tr(
+                                                market.count === 1
+                                                    ? 'price.sample'
+                                                    : 'price.samples'
+                                            ),
+                                        min:
+                                            localizedNumber(
+                                                Math.round(
+                                                    market.min
+                                                )
+                                            ),
+                                        max:
+                                            localizedNumber(
+                                                Math.round(
+                                                    market.max
+                                                )
+                                            )
+                                    }
+                                )
+                                : tr(
+                                    'price.playerMissingTip'
+                                )
                     )}"
                 >${escapeHtml(
-                    market?.count
+                    Number(
+                        market?.average ||
+                        0
+                    ) > 0
                         ? tr(
                             'price.players',
                             {
