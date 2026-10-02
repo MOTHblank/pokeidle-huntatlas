@@ -6,7 +6,7 @@
 // @supportURL   https://github.com/MOTHblank/pokeidle-huntatlas/issues
 // @downloadURL  https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
 // @updateURL    https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
-// @version      1.6.1
+// @version      1.7.0
 // @description  Hunt finder with measured lead-Pokémon combat speed and personalized trainer XP/hour ranking.
 // @match        https://pokeidle.io/*
 // @match        https://www.pokeidle.io/*
@@ -276,17 +276,16 @@
             'filter.uncaughtOnly': 'Uncaught only',
             'filter.caughtOnly': 'Caught only',
             'filter.sort': 'Sort',
-            'sort.xp': 'Best XP/hour',
-            'sort.npcDesc': 'NPC sell value · high first',
-            'sort.npcAsc': 'NPC sell value · low first',
-            'sort.playerDesc': 'Player Market · high first',
-            'sort.playerAsc': 'Player Market · low first',
-            'sort.matchup': 'Best matchup',
-            'sort.spawnDesc': 'Highest encounter rate',
-            'sort.levelAsc': 'Lowest hunt level',
-            'sort.levelDesc': 'Highest hunt level',
+            'sort.xp': 'XP/hour',
+            'sort.name': 'Name',
             'sort.pokedex': 'Pokédex number',
-            'sort.name': 'Name A–Z',
+            'sort.level': 'Level',
+            'sort.npc': 'MKT',
+            'sort.player': 'RMT',
+            'sort.matchup': 'Matchup',
+            'sort.spawn': 'Encounter rate',
+            'sort.asc': 'Ascending',
+            'sort.desc': 'Descending',
             'filter.clear': 'Clear filters',
             'filter.defaults': 'Default filters',
             'filter.changedOne': '1 filter changed from default',
@@ -300,10 +299,14 @@
             'capture.notCaught': 'not caught',
             'capture.typeUnknown': 'type ?',
             'common.lead': 'Lead',
-            'price.npc': 'NPC ~{value}',
-            'price.players': 'Players ~{value}',
-            'price.npcTip': 'NPC sale reference at the visible hunt level{plural} and quality 1.0{range} · actual captured Pokémon vary with quality; shiny ×10',
-            'price.playerTip': 'Recent non-shiny completed player Market sales · {count} {sample} · range {min}–{max}',
+            'price.npc': 'MKT ~{value}',
+            'price.npcMissing': 'MKT —',
+            'price.players': 'RMT ~{value}',
+            'price.playersMissing': 'RMT —',
+            'price.npcTip': 'MKT: NPC sale reference at the visible hunt level{plural} and quality 1.0{range} · actual captured Pokémon vary with quality; shiny ×10',
+            'price.npcMissingTip': 'MKT: NPC sell value is not available for this species yet.',
+            'price.playerTip': 'RMT: recent non-shiny completed player Market sales · {count} {sample} · range {min}–{max}',
+            'price.playerMissingTip': 'RMT: no recent completed player-Market sale was found in the sampled history.',
             'price.sample': 'sample',
             'price.samples': 'samples',
             'price.range': ' · range {min}–{max}',
@@ -344,7 +347,12 @@
             'xp.pokemonPerHour': '{value} Pokémon XP/h',
             'xp.measuredShort': 'measured {value} XP/h',
             'xp.modelShort': 'model {value} XP/h',
-            'xp.best': 'Best XP in current filters',
+            'xp.sectionTitle': 'XP/hour recommendations',
+            'xp.sectionSubtitle': 'Best hunt for {lead} within the current filters.',
+            'xp.best': 'Best: {hunt}',
+            'xp.showTopFive': 'Show top 5',
+            'xp.hideTopFive': 'Hide top 5',
+            'xp.topFiveTitle': 'Top 5 hunts by trainer XP/hour',
             'xp.measuredTrainer': 'measured {value} trainer XP/h',
             'xp.modeledTrainer': 'modeled {value} trainer XP/h',
             'xp.noEstimate': 'No unlocked XP estimate matches the current filters.',
@@ -421,17 +429,16 @@
             'filter.uncaughtOnly': 'Só não capturados',
             'filter.caughtOnly': 'Só capturados',
             'filter.sort': 'Ordenar',
-            'sort.xp': 'Melhor XP/hora',
-            'sort.npcDesc': 'Venda ao NPC · maior primeiro',
-            'sort.npcAsc': 'Venda ao NPC · menor primeiro',
-            'sort.playerDesc': 'Mercado de jogadores · maior primeiro',
-            'sort.playerAsc': 'Mercado de jogadores · menor primeiro',
-            'sort.matchup': 'Melhor matchup',
-            'sort.spawnDesc': 'Maior chance de encontro',
-            'sort.levelAsc': 'Menor nível de hunt',
-            'sort.levelDesc': 'Maior nível de hunt',
+            'sort.xp': 'XP/hora',
+            'sort.name': 'Nome',
             'sort.pokedex': 'Número da Pokédex',
-            'sort.name': 'Nome A–Z',
+            'sort.level': 'Nível',
+            'sort.npc': 'MKT',
+            'sort.player': 'RMT',
+            'sort.matchup': 'Matchup',
+            'sort.spawn': 'Taxa de encontro',
+            'sort.asc': 'Crescente',
+            'sort.desc': 'Decrescente',
             'filter.clear': 'Limpar filtros',
             'filter.defaults': 'Filtros padrão',
             'filter.changedOne': '1 filtro alterado',
@@ -445,10 +452,14 @@
             'capture.notCaught': 'não capturado',
             'capture.typeUnknown': 'tipo ?',
             'common.lead': 'Líder',
-            'price.npc': 'NPC ~{value}',
-            'price.players': 'Jogadores ~{value}',
-            'price.npcTip': 'Referência de venda ao NPC no{plural} nível{plural} de hunt visível{plural} e qualidade 1,0{range} · o valor real varia com a qualidade; shiny ×10',
-            'price.playerTip': 'Vendas recentes concluídas de Pokémon não shiny no Mercado de jogadores · {count} {sample} · faixa {min}–{max}',
+            'price.npc': 'MKT ~{value}',
+            'price.npcMissing': 'MKT —',
+            'price.players': 'RMT ~{value}',
+            'price.playersMissing': 'RMT —',
+            'price.npcTip': 'MKT: referência de venda ao NPC no{plural} nível{plural} de hunt visível{plural} e qualidade 1,0{range} · o valor real varia com a qualidade; shiny ×10',
+            'price.npcMissingTip': 'MKT: o valor de venda ao NPC ainda não está disponível para esta espécie.',
+            'price.playerTip': 'RMT: vendas recentes concluídas de Pokémon não shiny no Mercado de jogadores · {count} {sample} · faixa {min}–{max}',
+            'price.playerMissingTip': 'RMT: nenhuma venda recente concluída no Mercado de jogadores foi encontrada na amostra.',
             'price.sample': 'amostra',
             'price.samples': 'amostras',
             'price.range': ' · faixa {min}–{max}',
@@ -489,7 +500,12 @@
             'xp.pokemonPerHour': '{value} XP de Pokémon/h',
             'xp.measuredShort': 'medido {value} XP/h',
             'xp.modelShort': 'modelo {value} XP/h',
-            'xp.best': 'Melhor XP nos filtros atuais',
+            'xp.sectionTitle': 'Recomendações de XP/hora',
+            'xp.sectionSubtitle': 'Melhor hunt para {lead} dentro dos filtros atuais.',
+            'xp.best': 'Melhor: {hunt}',
+            'xp.showTopFive': 'Ver top 5',
+            'xp.hideTopFive': 'Ocultar top 5',
+            'xp.topFiveTitle': 'Top 5 hunts por XP de treinador/hora',
             'xp.measuredTrainer': 'medido {value} XP de treinador/h',
             'xp.modeledTrainer': 'modelado {value} XP de treinador/h',
             'xp.noEstimate': 'Nenhuma estimativa de XP liberada corresponde aos filtros atuais.',
@@ -767,7 +783,8 @@
             weakness: 'all',
             availability: 'unlocked',
             captured: 'all',
-            sort: 'xp'
+            sort: 'xp',
+            sortDirection: 'desc'
         };
     }
 
@@ -776,14 +793,87 @@
             defaultFilters();
 
         try {
-            return {
-                ...defaults,
-                ...JSON.parse(
+            const saved =
+                JSON.parse(
                     localStorage.getItem(
                         FILTER_KEY
                     ) || '{}'
-                )
+                );
+
+            const next = {
+                ...defaults,
+                ...saved
             };
+
+            const legacySorts = {
+                npc_desc: [
+                    'npc',
+                    'desc'
+                ],
+                npc_asc: [
+                    'npc',
+                    'asc'
+                ],
+                player_market_desc: [
+                    'player_market',
+                    'desc'
+                ],
+                player_market_asc: [
+                    'player_market',
+                    'asc'
+                ],
+                spawn_desc: [
+                    'spawn',
+                    'desc'
+                ],
+                level_desc: [
+                    'level',
+                    'desc'
+                ],
+                level_asc: [
+                    'level',
+                    'asc'
+                ]
+            };
+
+            if (
+                legacySorts[
+                    next.sort
+                ]
+            ) {
+                [
+                    next.sort,
+                    next.sortDirection
+                ] =
+                    legacySorts[
+                        next.sort
+                    ];
+            } else if (
+                saved.sortDirection ===
+                    undefined
+            ) {
+                next.sortDirection =
+                    (
+                        next.sort ===
+                            'name' ||
+                        next.sort ===
+                            'pokedex'
+                    )
+                        ? 'asc'
+                        : 'desc';
+            }
+
+            if (
+                next.sortDirection !==
+                    'asc' &&
+                next.sortDirection !==
+                    'desc'
+            ) {
+                next.sortDirection =
+                    defaults.sortDirection;
+            }
+
+            return next;
         } catch {
             return defaults;
         }
@@ -798,6 +888,7 @@
         ).filter(
             key =>
                 key !== 'sort' &&
+                key !== 'sortDirection' &&
                 String(
                     state.filters[key] ??
                     ''
