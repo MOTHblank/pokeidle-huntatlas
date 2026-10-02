@@ -7683,13 +7683,15 @@
         values,
         selected,
         allValue,
-        allLabel
+        allLabel,
+        labelForValue =
+            value => value
     ) {
         return [
             `<option value="${escapeHtml(allValue)}">${escapeHtml(allLabel)}</option>`,
             ...values.map(
                 value =>
-                    `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(value)}</option>`
+                    `<option value="${escapeHtml(value)}" ${value === selected ? 'selected' : ''}>${escapeHtml(labelForValue(value))}</option>`
             )
         ].join('');
     }
@@ -7783,7 +7785,8 @@
                     )
                     : tr(
                         'filter.allTypes'
-                    )
+                    ),
+                typeLabel
             );
 
         if (
@@ -7815,7 +7818,8 @@
                     )
                     : tr(
                         'filter.anyWeakness'
-                    )
+                    ),
+                typeLabel
             );
 
         if (
@@ -8241,7 +8245,11 @@
 
         if (!lead) {
             host.innerHTML =
-                '<div class="mha-xp-note">Waiting for the active Pokémon before calculating trainer XP/hour.</div>';
+                `<div class="mha-xp-note">${escapeHtml(
+                    tr(
+                        'xp.waitingLead'
+                    )
+                )}</div>`;
 
             return;
         }
@@ -8287,28 +8295,94 @@
                 .length;
 
         const leadText =
-            `${lead.nome || 'Pokémon'} Lv ${Number(lead.level || 0)} · lead · power ${Math.round(pokemonPower(lead))}`;
+            tr(
+                'xp.lead',
+                {
+                    name:
+                        lead.nome ||
+                        'Pokémon',
+                    level:
+                        Number(
+                            lead.level ||
+                            0
+                        ),
+                    power:
+                        Math.round(
+                            pokemonPower(
+                                lead
+                            )
+                        )
+                }
+            );
 
         const profileDetails =
             profile
                 ? [
                     profile.warmStart
-                        ? 'warm-started from nearest level'
+                        ? tr(
+                            'xp.warmStart'
+                        )
                         : null,
                     profile.kills
-                        ? `${profile.kills} kills`
+                        ? tr(
+                            'xp.kills',
+                            {
+                                count:
+                                    profile.kills
+                            }
+                        )
                         : null,
                     profile.attacks
-                        ? `${profile.attacks} attacks`
+                        ? tr(
+                            'xp.attacks',
+                            {
+                                count:
+                                    profile.attacks
+                            }
+                        )
                         : null,
                     profile.cadenceMs
-                        ? `${(profile.cadenceMs / 1000).toFixed(2)}s attack cadence${profile.cadenceMeasured ? '' : profile.cadenceFromThroughput ? ' (attack throughput)' : ' (900ms floor)'}`
+                        ? tr(
+                            'xp.cadence',
+                            {
+                                seconds:
+                                    (
+                                        profile.cadenceMs /
+                                        1000
+                                    ).toFixed(2),
+                                detail:
+                                    profile.cadenceMeasured
+                                        ? ''
+                                        : profile.cadenceFromThroughput
+                                            ? tr(
+                                                'xp.throughput'
+                                            )
+                                            : tr(
+                                                'xp.floor'
+                                            )
+                            }
+                        )
                         : null,
                     profile.movementMs
-                        ? `${(profile.movementMs / 1000).toFixed(2)}s travel`
+                        ? tr(
+                            'xp.travel',
+                            {
+                                seconds:
+                                    (
+                                        profile.movementMs /
+                                        1000
+                                    ).toFixed(2)
+                            }
+                        )
                         : null,
                     profile.hpSamples
-                        ? `${profile.hpSamples} HP samples`
+                        ? tr(
+                            'xp.hpSamples',
+                            {
+                                count:
+                                    profile.hpSamples
+                            }
+                        )
                         : null
                 ]
                     .filter(Boolean)
@@ -8317,8 +8391,30 @@
 
         const calibrationText =
             profile?.attacks
-                ? `${measuredHunts ? measuredHunts + ' measured hunt' + (measuredHunts === 1 ? '' : 's') : 'combat model calibrating'}${profileDetails ? ' · ' + profileDetails : ''}`
-                : 'learning this lead Pokémon: waiting for real attack and kill events';
+                ? (
+                    measuredHunts
+                        ? tr(
+                            measuredHunts === 1
+                                ? 'xp.measuredHunt'
+                                : 'xp.measuredHunts',
+                            {
+                                count:
+                                    measuredHunts
+                            }
+                        )
+                        : tr(
+                            'xp.calibrating'
+                        )
+                ) +
+                  (
+                      profileDetails
+                          ? ' · ' +
+                            profileDetails
+                          : ''
+                  )
+                : tr(
+                    'xp.learning'
+                );
         const bestRows =
             usable
                 .slice(0, 5)
@@ -8331,14 +8427,64 @@
                         return `
                             <div class="mha-best-row">
                                 <span class="mha-best-rank">${index + 1}</span>
-                                <span class="mha-best-name">${escapeHtml(row.hunt.nome || row.hunt.slug)} · Lv ${Number(row.hunt.nivel || 0)}</span>
-                                <span class="mha-xp-value" title="${escapeHtml([row.xp.killsH ? Math.round(row.xp.killsH) + ' kills/h' : null, row.xp.pokemonValue ? formatRate(row.xp.pokemonValue) + ' Pokémon XP/h' : null].filter(Boolean).join(' · '))}">${row.xp.observed ? 'measured ' : 'model '}${formatRate(row.xp.value)} XP/h</span>
+                                <span class="mha-best-name">${escapeHtml(row.hunt.nome || row.hunt.slug)} · ${escapeHtml(
+                                    tr(
+                                        'hunt.level',
+                                        {
+                                            level:
+                                                Number(
+                                                    row.hunt.nivel ||
+                                                    0
+                                                )
+                                        }
+                                    )
+                                )}</span>
+                                <span class="mha-xp-value" title="${escapeHtml([
+                                    row.xp.killsH
+                                        ? tr(
+                                            'xp.killsPerHour',
+                                            {
+                                                count:
+                                                    Math.round(
+                                                        row.xp.killsH
+                                                    )
+                                            }
+                                        )
+                                        : null,
+                                    row.xp.pokemonValue
+                                        ? tr(
+                                            'xp.pokemonPerHour',
+                                            {
+                                                value:
+                                                    formatRate(
+                                                        row.xp.pokemonValue
+                                                    )
+                                            }
+                                        )
+                                        : null
+                                ].filter(Boolean).join(' · '))}">${escapeHtml(
+                                    tr(
+                                        row.xp.observed
+                                            ? 'xp.measuredShort'
+                                            : 'xp.modelShort',
+                                        {
+                                            value:
+                                                formatRate(
+                                                    row.xp.value
+                                                )
+                                        }
+                                    )
+                                )}</span>
                                 <button
                                     type="button"
                                     class="mha-go ${here ? 'current' : ''}"
                                     data-mha-best-go="${escapeHtml(row.hunt.slug)}"
                                     ${here ? 'disabled' : ''}
-                                >${here ? 'Here' : 'Go'}</button>
+                                >${tr(
+                                    here
+                                        ? 'hunt.here'
+                                        : 'hunt.go'
+                                )}</button>
                             </div>
                         `;
                     }
@@ -8352,8 +8498,48 @@
         host.innerHTML = `
             <div class="mha-xp-primary">
                 <div class="mha-xp-primary-main">
-                    <strong>${best ? escapeHtml(best.hunt.nome || best.hunt.slug) + ' · Lv ' + Number(best.hunt.nivel || 0) : 'Best XP in current filters'}</strong>
-                    <span>${best ? (best.xp.observed ? 'measured ' : 'modeled ') + escapeHtml(formatRate(best.xp.value)) + ' trainer XP/h' : 'No unlocked XP estimate matches the current filters.'}</span>
+                    <strong>${best
+                        ? escapeHtml(
+                            best.hunt.nome ||
+                            best.hunt.slug
+                        ) +
+                          ' · ' +
+                          escapeHtml(
+                              tr(
+                                  'hunt.level',
+                                  {
+                                      level:
+                                          Number(
+                                              best.hunt.nivel ||
+                                              0
+                                          )
+                                  }
+                              )
+                          )
+                        : escapeHtml(
+                            tr(
+                                'xp.best'
+                            )
+                        )}</strong>
+                    <span>${best
+                        ? escapeHtml(
+                            tr(
+                                best.xp.observed
+                                    ? 'xp.measuredTrainer'
+                                    : 'xp.modeledTrainer',
+                                {
+                                    value:
+                                        formatRate(
+                                            best.xp.value
+                                        )
+                                }
+                            )
+                        )
+                        : escapeHtml(
+                            tr(
+                                'xp.noEstimate'
+                            )
+                        )}</span>
                 </div>
 
                 ${best ? `
@@ -8362,23 +8548,57 @@
                         class="mha-go ${bestHere ? 'current' : ''}"
                         data-mha-best-go="${escapeHtml(best.hunt.slug)}"
                         ${bestHere ? 'disabled' : ''}
-                    >${bestHere ? 'Here' : 'Go'}</button>
+                    >${tr(
+                        bestHere
+                            ? 'hunt.here'
+                            : 'hunt.go'
+                    )}</button>
                 ` : ''}
 
                 <button type="button" class="mha-xp-toggle" data-mha-xp-toggle>
-                    ${state.xpDetailsOpen ? 'Hide details' : 'Details'}
+                    ${tr(
+                        state.xpDetailsOpen
+                            ? 'xp.hideDetails'
+                            : 'xp.details'
+                    )}
                 </button>
             </div>
 
             <div class="mha-xp-note">
-                ${escapeHtml(leadText)} · recommendations respect the current Atlas filters.
+                ${escapeHtml(
+                    tr(
+                        'xp.recommendationNote',
+                        {
+                            lead:
+                                leadText
+                        }
+                    )
+                )}
             </div>
 
             <div class="mha-xp-details" ${state.xpDetailsOpen ? '' : 'hidden'}>
                 <div class="mha-xp-note">
                     ${escapeHtml(calibrationText)}
-                    ${currentXp?.value ? ' · current ' + (currentXp.observed ? 'measured ' : 'modeled ') + escapeHtml(formatRate(currentXp.value)) + ' trainer XP/h' : ''}
-                    · exact upstream XP/kill curve; movement, cadence, damage and kill speed come from this lead Pokémon's real combat.
+                    ${currentXp?.value
+                        ? escapeHtml(
+                            tr(
+                                currentXp.observed
+                                    ? 'xp.currentMeasured'
+                                    : 'xp.currentModeled',
+                                {
+                                    value:
+                                        formatRate(
+                                            currentXp.value
+                                        )
+                                }
+                            )
+                        )
+                        : ''}
+                    ${escapeHtml(
+                        tr(
+                            'xp.modelNote'
+                        )
+                    )}
                 </div>
 
                 <div class="mha-best-list">
@@ -8510,16 +8730,29 @@
                       hasMore
                           ? `
                               <button type="button" class="mha-show-more" data-mha-show-more>
-                                  Show more · ${results.length - visibleResults.length} Pokémon remaining
+                                  ${escapeHtml(
+                                      tr(
+                                          'results.showMore',
+                                          {
+                                              count:
+                                                  results.length -
+                                                  visibleResults.length
+                                          }
+                                      )
+                                  )}
                               </button>
                           `
                           : ''
                   )
                 : `
                     <div class="mha-empty">
-                        ${state.hunts.length
-                            ? 'No Pokémon match these filters. Use Clear filters to reset the Atlas.'
-                            : 'Waiting for PokéIdle hunt data. Reload the page once after installing Hunt Atlas if this remains empty.'}
+                        ${escapeHtml(
+                            tr(
+                                state.hunts.length
+                                    ? 'results.noMatch'
+                                    : 'results.waiting'
+                            )
+                        )}
                     </div>
                 `;
 
