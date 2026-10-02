@@ -6605,10 +6605,6 @@
                 font: 11px/1.35 system-ui,sans-serif !important;
             }
 
-            #${DRAWER_ID} .mha-head {
-                display: none !important;
-            }
-
             #${DRAWER_ID}[hidden] {
                 display: none !important;
             }
@@ -6621,15 +6617,21 @@
             .mha-head {
                 display: flex;
                 align-items: center;
-                gap: 7px;
-                min-height: 42px;
-                padding: 7px 9px;
+                gap: 9px;
+                min-height: 38px;
+                padding: 6px 10px;
                 border-bottom: 1px solid rgba(255,255,255,.08);
+                background: rgba(255,255,255,.018);
             }
 
             .mha-head strong {
-                flex: 1;
-                font-size: 12px;
+                flex: 0 0 auto;
+                font-size: 13px;
+                white-space: nowrap;
+            }
+
+            .mha-head [data-mha-close] {
+                display: none !important;
             }
 
             .mha-head button,
@@ -6851,44 +6853,47 @@
             .mha-credit {
                 display: flex;
                 align-items: center;
-                justify-content: flex-end;
                 gap: 5px;
-                padding: 4px 8px 5px;
-                border-top: 1px solid rgba(255,255,255,.045);
-                color: #665e62;
-                font-size: 7px;
+                min-width: 0;
+                color: #8f858a;
+                font-size: 8px;
+                white-space: nowrap;
+            }
+
+            .mha-head .mha-credit {
+                margin-right: auto;
             }
 
             .mha-credit a {
-                color: #776d72;
+                color: #9c9196;
                 text-decoration: none;
             }
 
             .mha-credit a:hover,
             .mha-credit a:focus-visible {
-                color: #b8adb2;
+                color: #d2c7cc;
                 text-decoration: underline;
             }
 
             .mha-credit-icon {
                 display: inline-grid;
-                width: 16px;
-                height: 16px;
+                width: 18px;
+                height: 18px;
                 place-items: center;
-                border: 1px solid rgba(255,255,255,.08);
+                border: 1px solid rgba(255,255,255,.11);
                 border-radius: 50%;
-                color: #857a80;
+                color: #a1979c;
                 text-decoration: none !important;
             }
 
             .mha-credit-icon svg {
-                width: 10px;
-                height: 10px;
+                width: 11px;
+                height: 11px;
                 fill: currentColor;
             }
 
             .mha-credit-sep {
-                color: #50494d;
+                color: #62595e;
             }
 
             .mha-body {
@@ -7133,8 +7138,13 @@
                     padding: 0;
                 }
 
-                .mha-credit {
-                    justify-content: center;
+                .mha-head {
+                    gap: 6px;
+                    overflow-x: auto;
+                }
+
+                .mha-head .mha-credit {
+                    justify-content: flex-start;
                 }
             }
         `;
@@ -7479,6 +7489,56 @@
         drawer.innerHTML = `
             <div class="mha-head">
                 <strong>${tr('title')}</strong>
+                <div class="mha-credit">
+                    <span>${tr('footer.by')}</span>
+
+                    <a
+                        class="mha-credit-icon"
+                        href="https://play.google.com/store/apps/developer?id=MOTHblank"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="${escapeHtml(tr('footer.play'))}"
+                        aria-label="${escapeHtml(tr('footer.play'))}"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M3.7 2.7c-.45.48-.7 1.2-.7 2.1v14.4c0 .9.25 1.62.7 2.1l.08.08L12.9 12 3.78 2.62l-.08.08Zm10.42 10.52-2.05-2.1L4.7 3.55c.17-.03.36-.01.57.1l11.7 6.65-2.85 2.92Zm-9.42 7.23 7.38-7.57 2.04-2.1 2.9 2.95-11.75 6.62c-.2.11-.4.13-.57.1Zm13.72-7.43-1.98-1.12 1.98-2.02c.95.54 1.48 1.08 1.48 1.57 0 .5-.53 1.03-1.48 1.57Z"/>
+                        </svg>
+                    </a>
+
+                    <a
+                        class="mha-credit-icon"
+                        href="https://x.com/MOTHblank"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="${escapeHtml(tr('footer.x'))}"
+                        aria-label="${escapeHtml(tr('footer.x'))}"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.39L6.48 22H3.36l7.25-8.29L2.96 2H9.36l4.42 5.84L18.9 2Zm-1.1 17.84h1.72L8.42 4.05H6.57L17.8 19.84Z"/>
+                        </svg>
+                    </a>
+
+                    <a
+                        class="mha-credit-icon"
+                        href="https://wa.me/+5537999933376"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="${escapeHtml(tr('footer.whatsapp'))}"
+                        aria-label="${escapeHtml(tr('footer.whatsapp'))}"
+                    >
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M12 2a9.8 9.8 0 0 0-8.43 14.8L2 22l5.35-1.52A9.95 9.95 0 1 0 12 2Zm0 17.94a8 8 0 0 1-4.08-1.12l-.29-.17-3.18.9.86-3.1-.19-.3A7.9 7.9 0 1 1 12 19.94Zm4.35-5.9c-.24-.12-1.4-.69-1.62-.77-.22-.08-.38-.12-.54.12-.16.24-.62.77-.76.93-.14.16-.28.18-.52.06-.24-.12-1-.37-1.91-1.18-.7-.63-1.18-1.41-1.32-1.65-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.4-.57 1.6-1.13.2-.55.2-1.03.14-1.13-.06-.1-.22-.16-.46-.28Z"/>
+                        </svg>
+                    </a>
+
+                    <span class="mha-credit-sep">·</span>
+
+                    <a
+                        href="https://github.com/MOTHblank/pokeidle-huntatlas"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >${tr('footer.source')}</a>
+                </div>
                 <button type="button" data-mha-close>×</button>
             </div>
 
@@ -7567,56 +7627,7 @@
 
             <div class="mha-body"></div>
 
-            <div class="mha-credit">
-                <span>${tr('footer.by')}</span>
 
-                <a
-                    class="mha-credit-icon"
-                    href="https://play.google.com/store/apps/developer?id=MOTHblank"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="${escapeHtml(tr('footer.play'))}"
-                    aria-label="${escapeHtml(tr('footer.play'))}"
-                >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M3.7 2.7c-.45.48-.7 1.2-.7 2.1v14.4c0 .9.25 1.62.7 2.1l.08.08L12.9 12 3.78 2.62l-.08.08Zm10.42 10.52-2.05-2.1L4.7 3.55c.17-.03.36-.01.57.1l11.7 6.65-2.85 2.92Zm-9.42 7.23 7.38-7.57 2.04-2.1 2.9 2.95-11.75 6.62c-.2.11-.4.13-.57.1Zm13.72-7.43-1.98-1.12 1.98-2.02c.95.54 1.48 1.08 1.48 1.57 0 .5-.53 1.03-1.48 1.57Z"/>
-                    </svg>
-                </a>
-
-                <a
-                    class="mha-credit-icon"
-                    href="https://x.com/MOTHblank"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="${escapeHtml(tr('footer.x'))}"
-                    aria-label="${escapeHtml(tr('footer.x'))}"
-                >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.39L6.48 22H3.36l7.25-8.29L2.96 2H9.36l4.42 5.84L18.9 2Zm-1.1 17.84h1.72L8.42 4.05H6.57L17.8 19.84Z"/>
-                    </svg>
-                </a>
-
-                <a
-                    class="mha-credit-icon"
-                    href="https://wa.me/+5537999933376"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title="${escapeHtml(tr('footer.whatsapp'))}"
-                    aria-label="${escapeHtml(tr('footer.whatsapp'))}"
-                >
-                    <svg viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M12 2a9.8 9.8 0 0 0-8.43 14.8L2 22l5.35-1.52A9.95 9.95 0 1 0 12 2Zm0 17.94a8 8 0 0 1-4.08-1.12l-.29-.17-3.18.9.86-3.1-.19-.3A7.9 7.9 0 1 1 12 19.94Zm4.35-5.9c-.24-.12-1.4-.69-1.62-.77-.22-.08-.38-.12-.54.12-.16.24-.62.77-.76.93-.14.16-.28.18-.52.06-.24-.12-1-.37-1.91-1.18-.7-.63-1.18-1.41-1.32-1.65-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.4-.57 1.6-1.13.2-.55.2-1.03.14-1.13-.06-.1-.22-.16-.46-.28Z"/>
-                    </svg>
-                </a>
-
-                <span class="mha-credit-sep">·</span>
-
-                <a
-                    href="https://github.com/MOTHblank/pokeidle-huntatlas"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >${tr('footer.source')}</a>
-            </div>
         `;
 
         modalBody.appendChild(
