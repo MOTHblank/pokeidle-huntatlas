@@ -7352,78 +7352,78 @@
 
         drawer.innerHTML = `
             <div class="mha-head">
-                <strong>Hunt Atlas</strong>
+                <strong>${tr('title')}</strong>
                 <button type="button" data-mha-close>×</button>
             </div>
 
             <div class="mha-filters">
                 <label class="mha-field mha-search">
-                    <span>Search</span>
-                    <input data-mha-filter="search" type="search" placeholder="Pokémon, hunt or region…">
+                    <span>${tr('filter.search')}</span>
+                    <input data-mha-filter="search" type="search" placeholder="${escapeHtml(tr('filter.searchPlaceholder'))}">
                 </label>
 
                 <label class="mha-field">
-                    <span>Region</span>
+                    <span>${tr('filter.region')}</span>
                     <select data-mha-filter="region"></select>
                 </label>
 
                 <div class="mha-field">
-                    <span>Level</span>
+                    <span>${tr('filter.level')}</span>
                     <div class="mha-level-inputs">
-                        <input data-mha-filter="minLevel" type="number" min="1" step="1" inputmode="numeric" placeholder="Min" aria-label="Minimum hunt level">
+                        <input data-mha-filter="minLevel" type="number" min="1" step="1" inputmode="numeric" placeholder="${escapeHtml(tr('filter.min'))}" aria-label="${escapeHtml(tr('filter.minLevelAria'))}">
                         <span>–</span>
-                        <input data-mha-filter="maxLevel" type="number" min="1" step="1" inputmode="numeric" placeholder="Max" aria-label="Maximum hunt level">
+                        <input data-mha-filter="maxLevel" type="number" min="1" step="1" inputmode="numeric" placeholder="${escapeHtml(tr('filter.max'))}" aria-label="${escapeHtml(tr('filter.maxLevelAria'))}">
                     </div>
                 </div>
 
                 <label class="mha-field">
-                    <span>Availability</span>
+                    <span>${tr('filter.availability')}</span>
                     <select data-mha-filter="availability">
-                        <option value="all">All</option>
-                        <option value="unlocked">Unlocked</option>
-                        <option value="locked">Locked</option>
+                        <option value="all">${tr('filter.all')}</option>
+                        <option value="unlocked">${tr('filter.unlocked')}</option>
+                        <option value="locked">${tr('filter.locked')}</option>
                     </select>
                 </label>
 
                 <label class="mha-field">
-                    <span>Type</span>
+                    <span>${tr('filter.type')}</span>
                     <select data-mha-filter="type"></select>
                 </label>
 
                 <label class="mha-field">
-                    <span>Weak to</span>
+                    <span>${tr('filter.weakTo')}</span>
                     <select data-mha-filter="weakness"></select>
                 </label>
 
                 <label class="mha-field">
-                    <span>Collection</span>
+                    <span>${tr('filter.collection')}</span>
                     <select data-mha-filter="captured">
-                        <option value="all">Caught + uncaught</option>
-                        <option value="uncaught">Uncaught only</option>
-                        <option value="captured">Caught only</option>
+                        <option value="all">${tr('filter.caughtAndUncaught')}</option>
+                        <option value="uncaught">${tr('filter.uncaughtOnly')}</option>
+                        <option value="captured">${tr('filter.caughtOnly')}</option>
                     </select>
                 </label>
 
                 <label class="mha-field">
-                    <span>Sort</span>
+                    <span>${tr('filter.sort')}</span>
                     <select data-mha-filter="sort">
-                        <option value="xp">Best XP/hour</option>
-                        <option value="npc_desc">NPC sell value · high first</option>
-                        <option value="npc_asc">NPC sell value · low first</option>
-                        <option value="player_market_desc">Player Market · high first</option>
-                        <option value="player_market_asc">Player Market · low first</option>
-                        <option value="matchup">Best matchup</option>
-                        <option value="spawn_desc">Highest encounter rate</option>
-                        <option value="level_asc">Lowest hunt level</option>
-                        <option value="level_desc">Highest hunt level</option>
-                        <option value="pokedex">Pokédex number</option>
-                        <option value="name">Name A–Z</option>
+                        <option value="xp">${tr('sort.xp')}</option>
+                        <option value="npc_desc">${tr('sort.npcDesc')}</option>
+                        <option value="npc_asc">${tr('sort.npcAsc')}</option>
+                        <option value="player_market_desc">${tr('sort.playerDesc')}</option>
+                        <option value="player_market_asc">${tr('sort.playerAsc')}</option>
+                        <option value="matchup">${tr('sort.matchup')}</option>
+                        <option value="spawn_desc">${tr('sort.spawnDesc')}</option>
+                        <option value="level_asc">${tr('sort.levelAsc')}</option>
+                        <option value="level_desc">${tr('sort.levelDesc')}</option>
+                        <option value="pokedex">${tr('sort.pokedex')}</option>
+                        <option value="name">${tr('sort.name')}</option>
                     </select>
                 </label>
 
                 <div class="mha-filter-actions">
                     <span class="mha-filter-state"></span>
-                    <button type="button" data-mha-clear>Clear filters</button>
+                    <button type="button" data-mha-clear>${tr('filter.clear')}</button>
                 </div>
             </div>
 
@@ -7437,15 +7437,15 @@
             <div class="mha-body"></div>
 
             <div class="mha-credit">
-                <span>by MOTHblank</span>
+                <span>${tr('footer.by')}</span>
 
                 <a
                     class="mha-credit-icon"
                     href="https://play.google.com/store/apps/developer?id=MOTHblank"
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="MOTHblank on Google Play"
-                    aria-label="MOTHblank on Google Play"
+                    title="${escapeHtml(tr('footer.play'))}"
+                    aria-label="${escapeHtml(tr('footer.play'))}"
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M3.7 2.7c-.45.48-.7 1.2-.7 2.1v14.4c0 .9.25 1.62.7 2.1l.08.08L12.9 12 3.78 2.62l-.08.08Zm10.42 10.52-2.05-2.1L4.7 3.55c.17-.03.36-.01.57.1l11.7 6.65-2.85 2.92Zm-9.42 7.23 7.38-7.57 2.04-2.1 2.9 2.95-11.75 6.62c-.2.11-.4.13-.57.1Zm13.72-7.43-1.98-1.12 1.98-2.02c.95.54 1.48 1.08 1.48 1.57 0 .5-.53 1.03-1.48 1.57Z"/>
@@ -7457,8 +7457,8 @@
                     href="https://x.com/MOTHblank"
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="MOTHblank on X"
-                    aria-label="MOTHblank on X"
+                    title="${escapeHtml(tr('footer.x'))}"
+                    aria-label="${escapeHtml(tr('footer.x'))}"
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M18.9 2H22l-6.77 7.74L23.2 22h-6.24l-4.89-6.39L6.48 22H3.36l7.25-8.29L2.96 2H9.36l4.42 5.84L18.9 2Zm-1.1 17.84h1.72L8.42 4.05H6.57L17.8 19.84Z"/>
@@ -7470,8 +7470,8 @@
                     href="https://wa.me/+5537999933376"
                     target="_blank"
                     rel="noopener noreferrer"
-                    title="WhatsApp / Pix"
-                    aria-label="WhatsApp / Pix"
+                    title="${escapeHtml(tr('footer.whatsapp'))}"
+                    aria-label="${escapeHtml(tr('footer.whatsapp'))}"
                 >
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path d="M12 2a9.8 9.8 0 0 0-8.43 14.8L2 22l5.35-1.52A9.95 9.95 0 1 0 12 2Zm0 17.94a8 8 0 0 1-4.08-1.12l-.29-.17-3.18.9.86-3.1-.19-.3A7.9 7.9 0 1 1 12 19.94Zm4.35-5.9c-.24-.12-1.4-.69-1.62-.77-.22-.08-.38-.12-.54.12-.16.24-.62.77-.76.93-.14.16-.28.18-.52.06-.24-.12-1-.37-1.91-1.18-.7-.63-1.18-1.41-1.32-1.65-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.39-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.51.1.46-.07 1.4-.57 1.6-1.13.2-.55.2-1.03.14-1.13-.06-.1-.22-.16-.46-.28Z"/>
@@ -7484,7 +7484,7 @@
                     href="https://github.com/MOTHblank/pokeidle-huntatlas"
                     target="_blank"
                     rel="noopener noreferrer"
-                >source code</a>
+                >${tr('footer.source')}</a>
             </div>
         `;
 
@@ -7651,7 +7651,9 @@
                 regionOptions(),
                 state.filters.region,
                 'all',
-                'All regions'
+                tr(
+                    'filter.allRegions'
+                )
             );
 
         if (
@@ -7704,8 +7706,12 @@
                 'all',
                 state.typeStatus ===
                     'loading'
-                    ? 'Type: loading…'
-                    : 'All types'
+                    ? tr(
+                        'filter.typeLoading'
+                    )
+                    : tr(
+                        'filter.allTypes'
+                    )
             );
 
         if (
@@ -7732,8 +7738,12 @@
                 'all',
                 state.typeStatus ===
                     'loading'
-                    ? 'Weakness: loading…'
-                    : 'Any weakness'
+                    ? tr(
+                        'filter.weaknessLoading'
+                    )
+                    : tr(
+                        'filter.anyWeakness'
+                    )
             );
 
         if (
@@ -7778,8 +7788,18 @@
         if (filterState) {
             filterState.textContent =
                 activeCount
-                    ? `${activeCount} filter${activeCount === 1 ? '' : 's'} changed from default`
-                    : 'Default filters';
+                    ? tr(
+                        activeCount === 1
+                            ? 'filter.changedOne'
+                            : 'filter.changedMany',
+                        {
+                            count:
+                                activeCount
+                        }
+                    )
+                    : tr(
+                        'filter.defaults'
+                    );
         }
 
         const clearButton =
