@@ -299,6 +299,7 @@
             'capture.caught': 'caught',
             'capture.notCaught': 'not caught',
             'capture.typeUnknown': 'type ?',
+            'common.lead': 'Lead',
             'price.npc': 'NPC ~{value}',
             'price.players': 'Players ~{value}',
             'price.npcTip': 'NPC sale reference at the visible hunt level{plural} and quality 1.0{range} · actual captured Pokémon vary with quality; shiny ×10',
@@ -443,6 +444,7 @@
             'capture.caught': 'capturado',
             'capture.notCaught': 'não capturado',
             'capture.typeUnknown': 'tipo ?',
+            'common.lead': 'Líder',
             'price.npc': 'NPC ~{value}',
             'price.players': 'Jogadores ~{value}',
             'price.npcTip': 'Referência de venda ao NPC no{plural} nível{plural} de hunt visível{plural} e qualidade 1,0{range} · o valor real varia com a qualidade; shiny ×10',
@@ -7913,13 +7915,25 @@
     ) {
         const capturedMarkup =
             species.captured
-                ? `<span class="mha-caught">✓ caught${species.captureCount > 1 ? ' ×' + species.captureCount : ''}</span>`
-                : '<span class="mha-uncaught">○ not caught</span>';
+                ? `<span class="mha-caught">✓ ${escapeHtml(
+                    tr(
+                        'capture.caught'
+                    )
+                )}${species.captureCount > 1 ? ' ×' + species.captureCount : ''}</span>`
+                : `<span class="mha-uncaught">○ ${escapeHtml(
+                    tr(
+                        'capture.notCaught'
+                    )
+                )}</span>`;
 
         const typeMarkup =
             species.types.length
-                ? `<span class="mha-types">${species.types.map(type => `<span class="mha-type">${escapeHtml(type)}</span>`).join('')}</span>`
-                : '<span class="mha-types"><span class="mha-type">type ?</span></span>';
+                ? `<span class="mha-types">${species.types.map(type => `<span class="mha-type">${escapeHtml(typeLabel(type))}</span>`).join('')}</span>`
+                : `<span class="mha-types"><span class="mha-type">${escapeHtml(
+                    tr(
+                        'capture.typeUnknown'
+                    )
+                )}</span></span>`;
 
         const matchup =
             speciesMatchup(
@@ -7928,12 +7942,37 @@
 
         const leadName =
             matchup?.lead?.nome ||
-            'Lead';
+            tr(
+                'common.lead'
+            );
 
         const npcStats =
             npcSellStatsForSpecies(
                 species
             );
+
+        const npcRange =
+            npcStats &&
+            npcStats.min !==
+                npcStats.max
+                ? tr(
+                    'price.range',
+                    {
+                        min:
+                            localizedNumber(
+                                Math.round(
+                                    npcStats.min
+                                )
+                            ),
+                        max:
+                            localizedNumber(
+                                Math.round(
+                                    npcStats.max
+                                )
+                            )
+                    }
+                )
+                : '';
 
         const npcMarkup =
             npcStats?.average > 0
@@ -7941,20 +7980,27 @@
                     <span
                         class="mha-npc-value"
                         title="${escapeHtml(
-                            'NPC sale reference at the visible hunt level' +
-                            (npcStats.count === 1 ? '' : 's') +
-                            ' and quality 1.0' +
-                            (npcStats.min !== npcStats.max
-                                ? ' · range ' +
-                                  Math.round(npcStats.min).toLocaleString() +
-                                  '–' +
-                                  Math.round(npcStats.max).toLocaleString()
-                                : '') +
-                            ' · actual captured Pokémon vary with quality; shiny ×10'
+                            tr(
+                                'price.npcTip',
+                                {
+                                    plural:
+                                        npcStats.count === 1
+                                            ? ''
+                                            : 's',
+                                    range:
+                                        npcRange
+                                }
+                            )
                         )}"
-                    >NPC ~${escapeHtml(
-                        formatRate(
-                            npcStats.average
+                    >${escapeHtml(
+                        tr(
+                            'price.npc',
+                            {
+                                value:
+                                    formatRate(
+                                        npcStats.average
+                                    )
+                            }
                         )
                     )}</span>
                 `
@@ -7969,18 +8015,41 @@
                     <span
                         class="mha-market"
                         title="${escapeHtml(
-                            'Recent non-shiny completed player Market sales · ' +
-                            market.count +
-                            ' sample' +
-                            (market.count === 1 ? '' : 's') +
-                            ' · range ' +
-                            Math.round(market.min).toLocaleString() +
-                            '–' +
-                            Math.round(market.max).toLocaleString()
+                            tr(
+                                'price.playerTip',
+                                {
+                                    count:
+                                        market.count,
+                                    sample:
+                                        tr(
+                                            market.count === 1
+                                                ? 'price.sample'
+                                                : 'price.samples'
+                                        ),
+                                    min:
+                                        localizedNumber(
+                                            Math.round(
+                                                market.min
+                                            )
+                                        ),
+                                    max:
+                                        localizedNumber(
+                                            Math.round(
+                                                market.max
+                                            )
+                                        )
+                                }
+                            )
                         )}"
-                    >Players ~${escapeHtml(
-                        formatRate(
-                            market.average
+                    >${escapeHtml(
+                        tr(
+                            'price.players',
+                            {
+                                value:
+                                    formatRate(
+                                        market.average
+                                    )
+                            }
                         )
                     )}</span>
                 `
@@ -8034,15 +8103,17 @@
 
                         const xpLabel =
                             xpInfo?.value
-                                ? (
+                                ? tr(
                                     xpInfo.observed
-                                        ? 'measured '
-                                        : 'combat model '
-                                ) +
-                                  formatRate(
-                                      xpInfo.value
-                                  ) +
-                                  ' trainer XP/h'
+                                        ? 'hunt.measuredXp'
+                                        : 'hunt.modeledXp',
+                                    {
+                                        value:
+                                            formatRate(
+                                                xpInfo.value
+                                            )
+                                    }
+                                )
                                 : null;
 
                         const sub =
@@ -8051,35 +8122,48 @@
                                     hunt.area ||
                                     ''
                                 ).toUpperCase(),
-                                'Lv ' +
-                                    Number(
-                                        hunt.nivel ||
-                                        0
-                                    ),
+                                tr(
+                                    'hunt.level',
+                                    {
+                                        level:
+                                            Number(
+                                                hunt.nivel ||
+                                                0
+                                            )
+                                    }
+                                ),
                                 percent !== null
-                                    ? '~' +
-                                      percent.toFixed(
-                                          percent >=
-                                              10
-                                              ? 0
-                                              : 1
-                                      ) +
-                                      '% weight'
+                                    ? tr(
+                                        'hunt.weight',
+                                        {
+                                            value:
+                                                percent.toFixed(
+                                                    percent >=
+                                                        10
+                                                        ? 0
+                                                        : 1
+                                                )
+                                        }
+                                    )
                                     : null,
-                                unlocked
-                                    ? 'unlocked'
-                                    : 'locked',
+                                tr(
+                                    unlocked
+                                        ? 'hunt.unlocked'
+                                        : 'hunt.locked'
+                                ),
                                 xpLabel
                             ]
                                 .filter(Boolean)
                                 .join(' · ');
 
                         const label =
-                            current
-                                ? 'Here'
-                                : unlocked
-                                    ? 'Go'
-                                    : 'Locked';
+                            tr(
+                                current
+                                    ? 'hunt.here'
+                                    : unlocked
+                                        ? 'hunt.go'
+                                        : 'hunt.locked'
+                            );
 
                         return `
                             <div class="mha-hunt ${current ? 'current' : ''} ${!unlocked ? 'locked' : ''}">
@@ -8093,7 +8177,26 @@
                                     class="mha-go ${current ? 'current' : ''}"
                                     data-mha-go="${escapeHtml(hunt.slug)}"
                                     ${!unlocked || current ? 'disabled' : ''}
-                                    title="${!unlocked ? 'Requires level ' + Number(hunt.nivel || 0) : current ? 'Current hunt' : 'Travel to this hunt'}"
+                                    title="${escapeHtml(
+                                        !unlocked
+                                            ? tr(
+                                                'hunt.requiresLevel',
+                                                {
+                                                    level:
+                                                        Number(
+                                                            hunt.nivel ||
+                                                            0
+                                                        )
+                                                }
+                                            )
+                                            : current
+                                                ? tr(
+                                                    'hunt.current'
+                                                )
+                                                : tr(
+                                                    'hunt.travel'
+                                                )
+                                    )}"
                                 >${label}</button>
                             </div>
                         `;
