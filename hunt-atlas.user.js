@@ -548,16 +548,11 @@
                 );
         } catch {}
 
-        if (
-            gameLanguage === 'pt'
-        ) {
-            return 'pt-BR';
-        }
-
-        if (
-            gameLanguage === 'en'
-        ) {
-            return 'en';
+        if (gameLanguage) {
+            return gameLanguage ===
+                'pt'
+                ? 'pt-BR'
+                : 'en';
         }
 
         const htmlLanguage =
@@ -567,20 +562,12 @@
                 ''
             ).toLowerCase();
 
-        if (
-            htmlLanguage.startsWith(
+        if (htmlLanguage) {
+            return htmlLanguage.startsWith(
                 'pt'
             )
-        ) {
-            return 'pt-BR';
-        }
-
-        if (
-            htmlLanguage.startsWith(
-                'en'
-            )
-        ) {
-            return 'en';
+                ? 'pt-BR'
+                : 'en';
         }
 
         const browserLanguage =
@@ -730,7 +717,6 @@
         drawerOpen: false,
         atlasEnabled:
             loadAtlasEnabled(),
-        nativeMapTitle: null,
         lastLocale: null,
         resultLimit: 120,
         xpDetailsOpen: false,
@@ -7101,16 +7087,6 @@
                 true;
         }
 
-        const title =
-            q('#modal-titulo');
-
-        if (
-            title &&
-            state.nativeMapTitle
-        ) {
-            title.textContent =
-                state.nativeMapTitle;
-        }
     }
 
     function cleanupMapIntegration() {
@@ -7122,8 +7098,6 @@
 
         state.drawerOpen =
             false;
-        state.nativeMapTitle =
-            null;
     }
 
     function ensureMapToggle() {
@@ -7237,18 +7211,6 @@
                 if (!open) {
                     cleanupMapIntegration();
                     return;
-                }
-
-                const title =
-                    q('#modal-titulo');
-
-                if (
-                    title &&
-                    title.textContent !==
-                        tr('title')
-                ) {
-                    state.nativeMapTitle =
-                        title.textContent;
                 }
 
                 ensureMapToggle();
@@ -7386,14 +7348,6 @@
             'data-mha-atlas-active',
             '1'
         );
-
-        const modalTitle =
-            q('#modal-titulo');
-
-        if (modalTitle) {
-            modalTitle.textContent =
-                tr('title');
-        }
 
         let drawer =
             q('#' + DRAWER_ID);
@@ -8970,7 +8924,7 @@
         );
 
         console.info(
-            '[PokéIdle Hunt Atlas] v1.6.0 loaded'
+            '[PokéIdle Hunt Atlas] v1.6.1 loaded'
         );
     }
 
