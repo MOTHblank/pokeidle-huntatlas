@@ -3875,27 +3875,39 @@
         if (value === 0) {
             return {
                 key: 'immune',
-                label: 'immune'
+                label:
+                    tr(
+                        'matchup.immune'
+                    )
             };
         }
 
         if (value > 1) {
             return {
                 key: 'weak',
-                label: 'weak'
+                label:
+                    tr(
+                        'matchup.weak'
+                    )
             };
         }
 
         if (value < 1) {
             return {
                 key: 'resist',
-                label: 'resists'
+                label:
+                    tr(
+                        'matchup.resists'
+                    )
             };
         }
 
         return {
             key: 'neutral',
-            label: 'neutral'
+            label:
+                tr(
+                    'matchup.neutral'
+                )
         };
     }
 
@@ -4002,14 +4014,34 @@
             direction === 'deal';
 
         const label =
-            isDeal
-                ? `Deal ${multiplier} · ${relation.label}`
-                : `Take ${multiplier} · ${relation.label}`;
+            tr(
+                isDeal
+                    ? 'matchup.deal'
+                    : 'matchup.take',
+                {
+                    multiplier,
+                    relation:
+                        relation.label
+                }
+            );
 
         const title =
-            isDeal
-                ? `${leadName}'s best known attack type (${result.attackType}) vs ${speciesName}: ${multiplier}.`
-                : `${speciesName}'s best STAB type (${result.attackType}) vs ${leadName}: ${multiplier}.`;
+            tr(
+                isDeal
+                    ? 'matchup.dealTitle'
+                    : 'matchup.takeTitle',
+                {
+                    lead:
+                        leadName,
+                    species:
+                        speciesName,
+                    type:
+                        typeLabel(
+                            result.attackType
+                        ),
+                    multiplier
+                }
+            );
 
         const favorability =
             isDeal
