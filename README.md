@@ -42,8 +42,6 @@ As opções incluem:
 ### Informações mostradas
 
 Cada Pokémon pode mostrar:
-
-- hunts onde aparece e a chance aproximada de encontro;
 - se já foi capturado;
 - tipos;
 - como ele se sai contra o Pokémon líder da sua equipe e vice-versa;
@@ -105,7 +103,6 @@ Available sorting options include:
 
 Each Pokémon can show:
 
-- hunts where it appears and its approximate encounter rate;
 - whether it has already been caught;
 - types;
 - how it matches up against your current party leader, and vice versa;
