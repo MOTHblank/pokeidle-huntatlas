@@ -1,10 +1,8 @@
 # PokéIdle Hunt Atlas
 
-Um addon para **PokéIdle** que transforma a tela de **Mapa** em uma ferramenta para encontrar Pokémon e escolher onde caçar.
+Um addon para **PokéIdle** que substitui a tela **Mapa**.
 
-O Hunt Atlas mostra informações úteis diretamente ao lado de cada Pokémon, como tipos, matchup com o líder da equipe, valor de venda e hunts disponíveis.
-
-## Português
+O Hunt Atlas mostra informações úteis diretamente ao lado de cada Pokémon, como tipos, matchup com o líder da equipe, valor de venda, etc.
 
 ### Instalação
 
@@ -64,9 +62,9 @@ O idioma do Hunt Atlas acompanha o idioma selecionado no PokéIdle. Atualmente h
 
 ## English
 
-A **PokéIdle** addon that turns the **Map** screen into a tool for finding Pokémon and choosing where to hunt.
+A **PokéIdle** addon that replaces the **Map** screen.
 
-Hunt Atlas shows useful information directly beside each Pokémon, including types, matchup with your party leader, sale value, and available hunts.
+Hunt Atlas shows useful information directly beside each Pokémon, including types, matchup with your party leader, sale value, etc.
 
 ### Installation
 
