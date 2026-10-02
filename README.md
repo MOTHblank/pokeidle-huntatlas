@@ -37,11 +37,13 @@ As opções incluem:
 - **MKT**
 - **RMT**
 - **Matchup**
-- **Taxa de encontro**
 
 ### Informações mostradas
 
+Cada Pokémon corresponde à sua própria hunt. No PokéIdle, ele é o único Pokémon daquela hunt e aparece continuamente; por isso o Atlas não mostra porcentagem ou taxa de encontro.
+
 Cada Pokémon pode mostrar:
+- a hunt onde ele é encontrado e o nível dela;
 - se já foi capturado;
 - tipos;
 - como ele se sai contra o Pokémon líder da sua equipe e vice-versa;
@@ -97,12 +99,14 @@ Available sorting options include:
 - **MKT**
 - **RMT**
 - **Matchup**
-- **Encounter rate**
 
 ### Information shown
 
+Each Pokémon corresponds to its own hunt. In PokéIdle, it is the only Pokémon in that hunt and spawns continuously, so Hunt Atlas does not show encounter-rate percentages.
+
 Each Pokémon can show:
 
+- the hunt where it is found and its level;
 - whether it has already been caught;
 - types;
 - how it matches up against your current party leader, and vice versa;
