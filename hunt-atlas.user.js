@@ -40,7 +40,7 @@
         'moth-pokeidle-hunt-atlas-performance-v2';
 
     const MARKET_CACHE_KEY =
-        'moth-pokeidle-hunt-atlas-market-v1';
+        'moth-pokeidle-hunt-atlas-market-v2';
 
     const MARKET_REFRESH_MS =
         15 * 60 * 1000;
@@ -3198,6 +3198,8 @@
             state.marketFetch ||
             state.marketListingFetch ||
             (
+                state.marketValues.size >
+                    0 &&
                 state.marketCacheSavedAt &&
                 Date.now() -
                     state.marketCacheSavedAt <
@@ -7647,7 +7649,15 @@
             toggle.id =
                 'mha-map-toggle';
 
-            title.insertAdjacentElement(
+            const credit =
+                q(
+                    '#mha-native-credit'
+                );
+
+            (
+                credit ||
+                title
+            ).insertAdjacentElement(
                 'afterend',
                 toggle
             );
