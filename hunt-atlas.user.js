@@ -8095,12 +8095,12 @@
                 : '';
 
         const npcMarkup =
-            npcStats?.average > 0
-                ? `
-                    <span
-                        class="mha-npc-value"
-                        title="${escapeHtml(
-                            tr(
+            `
+                <span
+                    class="mha-npc-value"
+                    title="${escapeHtml(
+                        npcStats?.average > 0
+                            ? tr(
                                 'price.npcTip',
                                 {
                                     plural:
@@ -8111,9 +8111,13 @@
                                         npcRange
                                 }
                             )
-                        )}"
-                    >${escapeHtml(
-                        tr(
+                            : tr(
+                                'price.npcMissingTip'
+                            )
+                    )}"
+                >${escapeHtml(
+                    npcStats?.average > 0
+                        ? tr(
                             'price.npc',
                             {
                                 value:
@@ -8122,20 +8126,22 @@
                                     )
                             }
                         )
-                    )}</span>
-                `
-                : '';
+                        : tr(
+                            'price.npcMissing'
+                        )
+                )}</span>
+            `;
 
         const market =
             species.market;
 
         const marketMarkup =
-            market?.count
-                ? `
-                    <span
-                        class="mha-market"
-                        title="${escapeHtml(
-                            tr(
+            `
+                <span
+                    class="mha-market"
+                    title="${escapeHtml(
+                        market?.count
+                            ? tr(
                                 'price.playerTip',
                                 {
                                     count:
@@ -8160,9 +8166,13 @@
                                         )
                                 }
                             )
-                        )}"
-                    >${escapeHtml(
-                        tr(
+                            : tr(
+                                'price.playerMissingTip'
+                            )
+                    )}"
+                >${escapeHtml(
+                    market?.count
+                        ? tr(
                             'price.players',
                             {
                                 value:
@@ -8171,9 +8181,11 @@
                                     )
                             }
                         )
-                    )}</span>
-                `
-                : '';
+                        : tr(
+                            'price.playersMissing'
+                        )
+                )}</span>
+            `;
 
         const matchupMarkup =
             matchup
