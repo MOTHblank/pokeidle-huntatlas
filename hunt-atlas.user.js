@@ -6145,129 +6145,169 @@
                 const sort =
                     state.filters.sort;
 
-                if (sort === 'xp') {
-                    const ax =
-                        Math.max(
-                            ...a.hunts.map(
-                                item =>
-                                    Number(
-                                        huntXpEstimate(
-                                            item.hunt
-                                        )?.value ||
-                                        0
-                                    )
-                            ),
-                            0
-                        );
+                const direction =
+                    state.filters
+                        .sortDirection ===
+                    'asc'
+                        ? 1
+                        : -1;
 
-                    const bx =
-                        Math.max(
-                            ...b.hunts.map(
-                                item =>
-                                    Number(
-                                        huntXpEstimate(
-                                            item.hunt
-                                        )?.value ||
-                                        0
-                                    )
-                            ),
-                            0
-                        );
+                const compareNumbers =
+                    (
+                        av,
+                        bv,
+                        missingBottom =
+                            false
+                    ) => {
+                        const an =
+                            Number(av);
 
-                    if (ax !== bx) {
-                        return bx - ax;
-                    }
-                }
+                        const bn =
+                            Number(bv);
 
-                if (
-                    sort ===
-                        'npc_desc' ||
-                    sort ===
-                        'npc_asc'
-                ) {
-                    const av =
-                        npcSellValueForSpecies(
-                            a
-                        );
+                        const aMissing =
+                            !Number.isFinite(
+                                an
+                            ) ||
+                            (
+                                missingBottom &&
+                                an <= 0
+                            );
 
-                    const bv =
-                        npcSellValueForSpecies(
-                            b
-                        );
+                        const bMissing =
+                            !Number.isFinite(
+                                bn
+                            ) ||
+                            (
+                                missingBottom &&
+                                bn <= 0
+                            );
 
-                    if (av !== bv) {
-                        return sort ===
-                            'npc_desc'
-                            ? bv - av
-                            : av - bv;
-                    }
-                }
+                        if (
+                            aMissing &&
+                            bMissing
+                        ) {
+                            return 0;
+                        }
 
-                if (
-                    sort ===
-                        'player_market_desc' ||
-                    sort ===
-                        'player_market_asc'
-                ) {
-                    const av =
-                        playerMarketValueForSpecies(
-                            a
-                        );
-
-                    const bv =
-                        playerMarketValueForSpecies(
-                            b
-                        );
-
-                    if (
-                        av > 0 ||
-                        bv > 0
-                    ) {
-                        if (av <= 0) {
+                        if (aMissing) {
                             return 1;
                         }
 
-                        if (bv <= 0) {
+                        if (bMissing) {
                             return -1;
                         }
 
-                        if (av !== bv) {
-                            return sort ===
-                                'player_market_desc'
-                                ? bv - av
-                                : av - bv;
+                        if (an === bn) {
+                            return 0;
                         }
-                    }
-                }
 
-                if (
-                    sort ===
-                    'spawn_desc'
+                        return (
+                            an -
+                            bn
+                        ) * direction;
+                    };
+
+                let comparison = 0;
+
+                if (sort === 'name') {
+                    comparison =
+                        a.name.localeCompare(
+                            b.name,
+                            currentLocale(),
+                            {
+                                sensitivity:
+                                    'base'
+                            }
+                        ) *
+                        direction;
+                } else if (
+                    sort === 'pokedex'
                 ) {
-                    const difference =
-                        bestSpawnPercent(
-                            b
-                        ) -
-                        bestSpawnPercent(
-                            a
+                    comparison =
+                        compareNumbers(
+                            a.id,
+                            b.id
                         );
-
-                    if (difference) {
-                        return difference;
-                    }
-                }
-
-                if (
-                    sort ===
-                        'level_asc' ||
-                    sort ===
-                        'level_desc'
+                } else if (
+                    sort === 'xp'
                 ) {
-                    const levelValue =
+                    const value =
                         species =>
-                            sort ===
-                                'level_desc'
-                                ? Math.max(
+                            Math.max(
+                                ...species.hunts.map(
+                                    item =>
+                                        Number(
+                                            huntXpEstimate(
+                                                item.hunt
+                                            )?.value ||
+                                            0
+                                        )
+                                ),
+                                0
+                            );
+
+                    comparison =
+                        compareNumbers(
+                            value(a),
+                            value(b)
+                        );
+                } else if (
+                    sort === 'npc'
+                ) {
+                    comparison =
+                        compareNumbers(
+                            npcSellValueForSpecies(
+                                a
+                            ),
+                            npcSellValueForSpecies(
+                                b
+                            ),
+                            true
+                        );
+                } else if (
+                    sort ===
+                    'player_market'
+                ) {
+                    comparison =
+                        compareNumbers(
+                            playerMarketValueForSpecies(
+                                a
+                            ),
+                            playerMarketValueForSpecies(
+                                b
+                            ),
+                            true
+                        );
+                } else if (
+                    sort === 'spawn'
+                ) {
+                    comparison =
+                        compareNumbers(
+                            bestSpawnPercent(
+                                a
+                            ),
+                            bestSpawnPercent(
+                                b
+                            )
+                        );
+                } else if (
+                    sort === 'level'
+                ) {
+                    const value =
+                        species =>
+                            direction > 0
+                                ? Math.min(
+                                    ...species.hunts.map(
+                                        item =>
+                                            Number(
+                                                item.hunt
+                                                    .nivel ||
+                                                Infinity
+                                            )
+                                    )
+                                )
+                                : Math.max(
                                     ...species.hunts.map(
                                         item =>
                                             Number(
@@ -6277,84 +6317,38 @@
                                             )
                                     ),
                                     0
-                                )
-                                : Math.min(
-                                    ...species.hunts.map(
-                                        item =>
-                                            Number(
-                                                item.hunt
-                                                    .nivel ||
-                                                Infinity
-                                            )
-                                    )
                                 );
 
-                    const aLevel =
-                        levelValue(
-                            a
+                    comparison =
+                        compareNumbers(
+                            value(a),
+                            value(b)
                         );
-
-                    const bLevel =
-                        levelValue(
-                            b
+                } else if (
+                    sort === 'matchup'
+                ) {
+                    comparison =
+                        compareNumbers(
+                            bestMatchupScore(
+                                a
+                            ),
+                            bestMatchupScore(
+                                b
+                            )
                         );
-
-                    if (aLevel !== bLevel) {
-                        return sort ===
-                            'level_desc'
-                            ? bLevel - aLevel
-                            : aLevel - bLevel;
-                    }
                 }
 
-                if (
-                    sort ===
-                    'matchup'
-                ) {
-                    const difference =
-                        bestMatchupScore(
-                            b
-                        ) -
-                        bestMatchupScore(
-                            a
-                        );
-
-                    if (
-                        Number.isFinite(
-                            difference
-                        ) &&
-                        difference
-                    ) {
-                        return difference;
-                    }
-                }
-
-                if (
-                    sort ===
-                    'pokedex'
-                ) {
-                    const difference =
-                        Number(a.id) -
-                        Number(b.id);
-
-                    if (difference) {
-                        return difference;
-                    }
-                }
-
-                if (
-                    sort !== 'name' &&
-                    sort !== 'pokedex' &&
-                    a.captured !==
-                        b.captured
-                ) {
-                    return a.captured
-                        ? 1
-                        : -1;
+                if (comparison) {
+                    return comparison;
                 }
 
                 return a.name.localeCompare(
-                    b.name
+                    b.name,
+                    currentLocale(),
+                    {
+                        sensitivity:
+                            'base'
+                    }
                 );
             }
         );
@@ -6698,6 +6692,21 @@
                 grid-template-columns: 1fr auto 1fr;
                 align-items: center;
                 gap: 4px;
+            }
+
+            .mha-sort-control {
+                display: grid;
+                grid-template-columns: minmax(0,1fr) 31px;
+                gap: 4px;
+            }
+
+            .mha-sort-dir {
+                width: 31px !important;
+                padding: 0 !important;
+                cursor: pointer;
+                font-size: 15px !important;
+                font-weight: 800 !important;
+                line-height: 1 !important;
             }
 
             .mha-level-inputs > span {
@@ -7523,19 +7532,24 @@
 
                 <label class="mha-field">
                     <span>${tr('filter.sort')}</span>
-                    <select data-mha-filter="sort">
-                        <option value="xp">${tr('sort.xp')}</option>
-                        <option value="npc_desc">${tr('sort.npcDesc')}</option>
-                        <option value="npc_asc">${tr('sort.npcAsc')}</option>
-                        <option value="player_market_desc">${tr('sort.playerDesc')}</option>
-                        <option value="player_market_asc">${tr('sort.playerAsc')}</option>
-                        <option value="matchup">${tr('sort.matchup')}</option>
-                        <option value="spawn_desc">${tr('sort.spawnDesc')}</option>
-                        <option value="level_asc">${tr('sort.levelAsc')}</option>
-                        <option value="level_desc">${tr('sort.levelDesc')}</option>
-                        <option value="pokedex">${tr('sort.pokedex')}</option>
-                        <option value="name">${tr('sort.name')}</option>
-                    </select>
+                    <div class="mha-sort-control">
+                        <select data-mha-filter="sort">
+                            <option value="xp">${tr('sort.xp')}</option>
+                            <option value="name">${tr('sort.name')}</option>
+                            <option value="pokedex">${tr('sort.pokedex')}</option>
+                            <option value="level">${tr('sort.level')}</option>
+                            <option value="npc">${tr('sort.npc')}</option>
+                            <option value="player_market">${tr('sort.player')}</option>
+                            <option value="matchup">${tr('sort.matchup')}</option>
+                            <option value="spawn">${tr('sort.spawn')}</option>
+                        </select>
+
+                        <button
+                            type="button"
+                            class="mha-sort-dir"
+                            data-mha-sort-dir
+                        ></button>
+                    </div>
                 </label>
 
                 <div class="mha-filter-actions">
@@ -7631,9 +7645,14 @@
                 const sort =
                     state.filters.sort;
 
+                const sortDirection =
+                    state.filters
+                        .sortDirection;
+
                 state.filters = {
                     ...defaultFilters(),
-                    sort
+                    sort,
+                    sortDirection
                 };
                 state.resultLimit =
                     120;
@@ -7683,6 +7702,28 @@
                 }
             );
         }
+
+        q(
+            '[data-mha-sort-dir]',
+            drawer
+        )?.addEventListener(
+            'click',
+            () => {
+                state.filters
+                    .sortDirection =
+                    state.filters
+                        .sortDirection ===
+                    'asc'
+                        ? 'desc'
+                        : 'asc';
+
+                state.resultLimit =
+                    120;
+
+                saveFilters();
+                renderDrawer();
+            }
+        );
 
         for (
             const control of
@@ -7895,6 +7936,36 @@
                 control.value =
                     state.filters[key];
             }
+        }
+
+        const sortDirection =
+            q(
+                '[data-mha-sort-dir]',
+                drawer
+            );
+
+        if (sortDirection) {
+            const ascending =
+                state.filters
+                    .sortDirection ===
+                'asc';
+
+            sortDirection.textContent =
+                ascending
+                    ? '↑'
+                    : '↓';
+
+            sortDirection.title =
+                tr(
+                    ascending
+                        ? 'sort.asc'
+                        : 'sort.desc'
+                );
+
+            sortDirection.setAttribute(
+                'aria-label',
+                sortDirection.title
+            );
         }
 
         const activeCount =
