@@ -822,6 +822,18 @@
                     'player_market',
                     'asc'
                 ],
+                market_desc: [
+                    'player_market',
+                    'desc'
+                ],
+                market_asc: [
+                    'player_market',
+                    'asc'
+                ],
+                default: [
+                    'pokedex',
+                    'asc'
+                ],
                 spawn_desc: [
                     'spawn',
                     'desc'
@@ -6673,7 +6685,8 @@
 
             .mha-filters input,
             .mha-filters select,
-            .mha-filter-actions button {
+            .mha-filter-actions button,
+            .mha-sort-control button {
                 width: 100%;
                 min-width: 0;
                 height: 30px;
