@@ -297,6 +297,7 @@
         xpDetailsOpen: false,
         mapObserver: null,
         mapSyncQueued: false,
+        keyboardBound: false,
         websocketHookInstalled: false,
         sockets: 0,
         activeSocket: null,
@@ -5952,7 +5953,8 @@
                 display: flex !important;
                 flex-direction: column !important;
                 min-height: 0 !important;
-                height: 100% !important;
+                height: auto !important;
+                flex: 1 1 auto !important;
                 overflow: hidden !important;
                 padding: 0 !important;
             }
@@ -6070,7 +6072,7 @@
             }
 
             .mha-filter-actions {
-                grid-column: span 2;
+                grid-column: span 3;
                 display: grid;
                 grid-template-columns: minmax(0,1fr) auto;
                 align-items: end;
@@ -6569,6 +6571,19 @@
                 }
 
                 renderDrawer();
+
+                if (!wasOpen) {
+                    queueMicrotask(
+                        () =>
+                            q(
+                                '[data-mha-filter="search"]',
+                                q(
+                                    '#' +
+                                    DRAWER_ID
+                                )
+                            )?.focus()
+                    );
+                }
             }
         );
     }
@@ -6889,45 +6904,42 @@
             }
         );
 
-        document.addEventListener(
-            'keydown',
-            event => {
-                if (
-                    !state.drawerOpen
-                ) {
-                    return;
-                }
+        if (
+            !state.keyboardBound
+        ) {
+            state.keyboardBound =
+                true;
 
-                if (
-                    event.key ===
-                    'Escape'
-                ) {
-                    state.drawerOpen =
-                        false;
-                    queueRender();
-                    return;
-                }
+            document.addEventListener(
+                'keydown',
+                event => {
+                    if (
+                        !isMapModalOpen() ||
+                        event.key !== '/' ||
+                        [
+                            'INPUT',
+                            'SELECT',
+                            'TEXTAREA'
+                        ].includes(
+                            document.activeElement
+                                ?.tagName
+                        )
+                    ) {
+                        return;
+                    }
 
-                if (
-                    event.key === '/' &&
-                    ![
-                        'INPUT',
-                        'SELECT',
-                        'TEXTAREA'
-                    ].includes(
-                        document.activeElement
-                            ?.tagName
-                    )
-                ) {
                     event.preventDefault();
 
                     q(
                         '[data-mha-filter="search"]',
-                        drawer
+                        q(
+                            '#' +
+                            DRAWER_ID
+                        )
                     )?.focus();
                 }
-            }
-        );
+            );
+        }
 
         for (
             const control of
