@@ -735,7 +735,7 @@
             loadAtlasEnabled(),
         lastLocale: null,
         resultLimit: 120,
-        xpDetailsOpen: false,
+        xpDetailsOpen: true,
         mapObserver: null,
         mapSyncQueued: false,
         keyboardBound: false,
@@ -6746,9 +6746,30 @@
             }
 
             .mha-xp-summary {
-                padding: 7px 8px;
+                padding: 8px 10px;
                 border-bottom: 1px solid rgba(255,255,255,.07);
                 background: rgba(102,176,255,.055);
+            }
+
+            .mha-xp-heading {
+                display: flex;
+                align-items: baseline;
+                gap: 8px;
+                margin-bottom: 6px;
+            }
+
+            .mha-xp-heading strong {
+                color: #e8e1e4;
+                font-size: 11px;
+            }
+
+            .mha-xp-heading span {
+                min-width: 0;
+                overflow: hidden;
+                color: #93898e;
+                font-size: 8px;
+                text-overflow: ellipsis;
+                white-space: nowrap;
             }
 
             .mha-xp-primary {
@@ -6796,10 +6817,18 @@
                 display: none;
             }
 
+            .mha-xp-list-title {
+                margin-bottom: 4px;
+                color: #b9d8fb;
+                font-size: 9px;
+                font-weight: 750;
+            }
+
             .mha-best-list {
                 display: grid;
                 gap: 3px;
-                margin-top: 6px;
+                margin-top: 0;
+                margin-bottom: 6px;
             }
 
             .mha-best-row {
@@ -8635,12 +8664,36 @@
             state.currentHuntSlug;
 
         host.innerHTML = `
+            <div class="mha-xp-heading">
+                <strong>${escapeHtml(
+                    tr(
+                        'xp.sectionTitle'
+                    )
+                )}</strong>
+                <span>${escapeHtml(
+                    tr(
+                        'xp.sectionSubtitle',
+                        {
+                            lead:
+                                lead.nome ||
+                                'Pokémon'
+                        }
+                    )
+                )}</span>
+            </div>
+
             <div class="mha-xp-primary">
                 <div class="mha-xp-primary-main">
                     <strong>${best
                         ? escapeHtml(
-                            best.hunt.nome ||
-                            best.hunt.slug
+                            tr(
+                                'xp.best',
+                                {
+                                    hunt:
+                                        best.hunt.nome ||
+                                        best.hunt.slug
+                                }
+                            )
                         ) +
                           ' · ' +
                           escapeHtml(
@@ -8657,7 +8710,7 @@
                           )
                         : escapeHtml(
                             tr(
-                                'xp.best'
+                                'xp.noEstimate'
                             )
                         )}</strong>
                     <span>${best
@@ -8674,11 +8727,7 @@
                                 }
                             )
                         )
-                        : escapeHtml(
-                            tr(
-                                'xp.noEstimate'
-                            )
-                        )}</span>
+                        : ''}</span>
                 </div>
 
                 ${best ? `
@@ -8697,27 +8746,28 @@
                 <button type="button" class="mha-xp-toggle" data-mha-xp-toggle>
                     ${tr(
                         state.xpDetailsOpen
-                            ? 'xp.hideDetails'
-                            : 'xp.details'
+                            ? 'xp.hideTopFive'
+                            : 'xp.showTopFive'
                     )}
                 </button>
             </div>
 
-            <div class="mha-xp-note">
-                ${escapeHtml(
-                    tr(
-                        'xp.recommendationNote',
-                        {
-                            lead:
-                                leadText
-                        }
-                    )
-                )}
-            </div>
-
             <div class="mha-xp-details" ${state.xpDetailsOpen ? '' : 'hidden'}>
+                <div class="mha-xp-list-title">
+                    ${escapeHtml(
+                        tr(
+                            'xp.topFiveTitle'
+                        )
+                    )}
+                </div>
+
+                <div class="mha-best-list">
+                    ${bestRows}
+                </div>
+
                 <div class="mha-xp-note">
-                    ${escapeHtml(calibrationText)}
+                    ${escapeHtml(leadText)}
+                    · ${escapeHtml(calibrationText)}
                     ${currentXp?.value
                         ? escapeHtml(
                             tr(
@@ -8738,10 +8788,6 @@
                             'xp.modelNote'
                         )
                     )}
-                </div>
-
-                <div class="mha-best-list">
-                    ${bestRows}
                 </div>
             </div>
         `;
