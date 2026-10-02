@@ -4,7 +4,7 @@ Um addon para **PokéIdle** que substitui a tela **Mapa**.
 
 O Hunt Atlas mostra informações úteis diretamente ao lado de cada Pokémon, como tipos, matchup com o líder da equipe, valor de venda, etc.
 
-![Prévia do Hunt Atlas](docs/hunt-atlas-preview.webp)
+![Prévia do Hunt Atlas](docs/map-preview.png)
 
 ### Instalação
 
