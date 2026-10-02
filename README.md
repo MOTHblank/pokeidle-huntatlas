@@ -8,6 +8,7 @@ Install `hunt-atlas.user.js` with Tampermonkey. The userscript points its update
 
 ## Features
 
+- Replaces PokéIdle's default **Mapa** view with an integrated Hunt Atlas inside the native modal.
 - Search and filter hunts by region, level, type, weakness, availability, and collection status.
 - Direct travel to available hunts.
 - Personalized trainer XP/hour estimates from observed combat data.
@@ -15,6 +16,7 @@ Install `hunt-atlas.user.js` with Tampermonkey. The userscript points its update
 - NPC sell-value estimates at each species' visible hunt level(s).
 - Recent completed player-Market averages for non-shiny Pokémon.
 - Sorting by XP/hour, NPC sell value, player Market value, matchup, encounter rate, hunt level, Pokédex number, or name.
+- Wide responsive layout with compact filters and multi-column results on desktop.
 - Persistent filters and cached combat/Market data.
 
 ## Prices
