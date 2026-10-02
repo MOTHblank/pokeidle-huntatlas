@@ -2228,8 +2228,9 @@
             if (
                 state.hunts.length
             ) {
-                state.status =
-                    'Using cached hunt catalog until live state arrives.';
+                setStatus(
+                    'status.cachedCatalog'
+                );
             }
         } catch {}
     }
@@ -2481,8 +2482,14 @@
                 null;
         }
 
-        state.status =
-            `Entered ${huntEvent.nome || huntEvent.slug}.`;
+        setStatus(
+            'status.entered',
+            {
+                hunt:
+                    huntEvent.nome ||
+                    huntEvent.slug
+            }
+        );
 
         state.pendingTravel = null;
 
@@ -2573,8 +2580,13 @@
                 state.hunts =
                     message.hunts;
 
-                state.status =
-                    `${state.hunts.length} hunt regions loaded.`;
+                setStatus(
+                    'status.huntsLoaded',
+                    {
+                        count:
+                            state.hunts.length
+                    }
+                );
             }
 
             mergeState(
@@ -6262,8 +6274,9 @@
         }
 
         if (!socketReady()) {
-            state.status =
-                'Game connection is not ready yet.';
+            setStatus(
+                'status.gameNotReady'
+            );
 
             queueRender();
             return false;
@@ -6277,8 +6290,14 @@
                     Date.now()
             };
 
-            state.status =
-                `Traveling to ${hunt.nome || hunt.slug}…`;
+            setStatus(
+                'status.traveling',
+                {
+                    hunt:
+                        hunt.nome ||
+                        hunt.slug
+                }
+            );
 
             /*
              * Explorer captured PokéIdle's exact map action:
@@ -6306,8 +6325,14 @@
                         state.currentHuntSlug !==
                             hunt.slug
                     ) {
-                        state.status =
-                            `PokéIdle did not accept ${hunt.nome || hunt.slug}. It may still be locked or hunt switching may be on cooldown.`;
+                        setStatus(
+                            'status.notAccepted',
+                            {
+                                hunt:
+                                    hunt.nome ||
+                                    hunt.slug
+                            }
+                        );
 
                         state.pendingTravel =
                             null;
@@ -6328,8 +6353,9 @@
             state.pendingTravel =
                 null;
 
-            state.status =
-                'Could not send hunt selection.';
+            setStatus(
+                'status.couldNotSend'
+            );
 
             queueRender();
             return false;
@@ -6342,8 +6368,15 @@
         if (
             !isUnlocked(hunt)
         ) {
-            state.status =
-                `${hunt.nome} is locked — requires level ${hunt.nivel}.`;
+            setStatus(
+                'status.huntLocked',
+                {
+                    hunt:
+                        hunt.nome,
+                    level:
+                        hunt.nivel
+                }
+            );
 
             queueRender();
             return;
@@ -6353,8 +6386,13 @@
             hunt.slug ===
             state.currentHuntSlug
         ) {
-            state.status =
-                `Already hunting in ${hunt.nome}.`;
+            setStatus(
+                'status.alreadyHere',
+                {
+                    hunt:
+                        hunt.nome
+                }
+            );
 
             queueRender();
             return;
@@ -8262,6 +8300,23 @@
     }
 
     function renderDrawer() {
+        const locale =
+            currentLocale();
+
+        if (
+            state.lastLocale !==
+                locale
+        ) {
+            state.lastLocale =
+                locale;
+
+            q(
+                '#' + DRAWER_ID
+            )?.remove();
+
+            ensureMapToggle();
+        }
+
         const drawer =
             ensureDrawer();
 
@@ -8393,20 +8448,26 @@
         const typeSuffix =
             state.typeStatus ===
                 'loading'
-                ? ' · loading type data'
+                ? tr(
+                    'status.loadingTypes'
+                )
                 : state.typeStatus ===
                     'error'
-                    ? ' · type data unavailable'
+                    ? tr(
+                        'status.typesUnavailable'
+                    )
                     : '';
 
         const marketSuffix =
             state.marketStatus ===
                 'loading'
-                ? ' · sampling Market prices'
+                ? tr(
+                    'status.marketSampling'
+                )
                 : '';
 
         const statusText =
-            state.status +
+            localizedStatus() +
             typeSuffix +
             marketSuffix;
 
@@ -8437,8 +8498,26 @@
 
         const countText =
             hasMore
-                ? `${visibleResults.length}/${results.length} Pokémon · ${huntCount} hunts`
-                : `${results.length} Pokémon · ${huntCount} hunts`;
+                ? tr(
+                    'results.countPartial',
+                    {
+                        shown:
+                            visibleResults.length,
+                        pokemon:
+                            results.length,
+                        hunts:
+                            huntCount
+                    }
+                )
+                : tr(
+                    'results.count',
+                    {
+                        pokemon:
+                            results.length,
+                        hunts:
+                            huntCount
+                    }
+                );
 
         if (
             count.textContent !==
