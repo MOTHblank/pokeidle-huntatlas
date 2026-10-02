@@ -10,7 +10,7 @@ O Hunt Atlas mostra informações úteis diretamente ao lado de cada Pokémon, c
 2. Abra o arquivo [hunt-atlas.user.js](https://github.com/MOTHblank/pokeidle-huntatlas/raw/refs/heads/main/hunt-atlas.user.js).
 3. O Tampermonkey deve abrir a tela de instalação automaticamente.
 4. Clique em **Instalar**.
-5. Abra ou recarregue [PokéIdle](https://pokeidle.io/).
+5. Abra ou recarregue [PokéIdle](https://pokeidle.io/app).
 6. Abra **Mapa**. O Hunt Atlas aparecerá no lugar do mapa padrão.
 
 Para voltar ao mapa original, use o botão **Atlas ligado/desligado** no topo da janela. A escolha fica salva.
@@ -72,7 +72,7 @@ Hunt Atlas shows useful information directly beside each Pokémon, including typ
 2. Open [hunt-atlas.user.js](https://github.com/MOTHblank/pokeidle-huntatlas/raw/refs/heads/main/hunt-atlas.user.js).
 3. Tampermonkey should open its installation page automatically.
 4. Click **Install**.
-5. Open or reload [PokéIdle](https://pokeidle.io/).
+5. Open or reload [PokéIdle](https://pokeidle.io/app).
 6. Open **Map**. Hunt Atlas will appear in place of the default map.
 
 To use the original map again, use the **Atlas on/off** button at the top of the window. Your choice is saved.
