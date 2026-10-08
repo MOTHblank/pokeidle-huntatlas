@@ -6009,29 +6009,6 @@
             hunt?.slug ||
             '';
 
-        if (
-            huntKey &&
-            state.estimateCache.has(
-                huntKey
-            )
-        ) {
-            return state.estimateCache.get(
-                huntKey
-            );
-        }
-
-        const remember =
-            value => {
-                if (huntKey) {
-                    state.estimateCache.set(
-                        huntKey,
-                        value
-                    );
-                }
-
-                return value;
-            };
-
         const record =
             performanceRecord(
                 hunt?.slug,
@@ -6043,8 +6020,12 @@
                 record
             );
 
+        /*
+         * Always check the live measurement before using a cached model.
+         * Measurements evolve during a hunt and must take precedence.
+         */
         if (observed) {
-            return remember({
+            return {
                 value:
                     observed.trainerXpH,
                 pokemonValue:
@@ -6067,8 +6048,38 @@
                             0
                         )
                     )
-            });
+            };
         }
+
+        if (
+            huntKey &&
+            state.estimateCache.has(
+                huntKey
+            )
+        ) {
+            return state.estimateCache.get(
+                huntKey
+            );
+        }
+
+        const remember =
+            value => {
+                /*
+                 * Never cache a missing estimate. The combat profile may
+                 * become usable on a later render without changing its key.
+                 */
+                if (
+                    huntKey &&
+                    Number(value?.value || 0) > 0
+                ) {
+                    state.estimateCache.set(
+                        huntKey,
+                        value
+                    );
+                }
+
+                return value;
+            };
 
         const profile =
             combatProfile();
@@ -6195,7 +6206,7 @@
                         return bv - av;
                     }
 
-                    return (
+                    const levelDifference =
                         Number(
                             b.hunt.nivel ||
                             0
@@ -6203,6 +6214,17 @@
                         Number(
                             a.hunt.nivel ||
                             0
+                        );
+
+                    if (levelDifference) {
+                        return levelDifference;
+                    }
+
+                    return String(
+                        a.hunt.slug || ''
+                    ).localeCompare(
+                        String(
+                            b.hunt.slug || ''
                         )
                     );
                 }
@@ -9010,7 +9032,9 @@
                             )
                     }
                 )
-                : null;
+                : tr(
+                    'xp.calibrating'
+                );
 
         const sub =
             [
