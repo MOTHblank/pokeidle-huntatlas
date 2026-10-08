@@ -6,7 +6,7 @@
 // @supportURL   https://github.com/MOTHblank/pokeidle-huntatlas/issues
 // @downloadURL  https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
 // @updateURL    https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
-// @version      1.7.6
+// @version      1.7.8
 // @description  Hunt finder with measured lead-Pokémon combat speed and personalized trainer XP/hour ranking.
 // @match        https://pokeidle.io/app*
 // @grant        unsafeWindow
@@ -9713,6 +9713,192 @@
         );
     }
 
+
+    function controllerSnapshot() {
+        const lead = leadPokemon();
+
+        const leadTypes = lead
+            ? normalizedTypes(
+                lead.tipos ||
+                state.typesBySpecies.get(
+                    Number(lead.speciesId)
+                )
+            )
+            : [];
+
+        const attackTypes = normalizedTypes(
+            attackerTypes()
+        );
+
+        const hunts = state.hunts.map(hunt => {
+            const xp = huntXpEstimate(hunt);
+
+            const species = (
+                Array.isArray(hunt?.especies)
+                    ? hunt.especies
+                    : []
+            ).map(entry => {
+                const id = Number(entry?.pokeId) || 0;
+                const name = String(
+                    entry?.nome ||
+                    entry?.name ||
+                    ('Pokémon ' + id)
+                );
+
+                const types = normalizedTypes(
+                    state.typesBySpecies.get(id) || []
+                );
+
+                const view = {
+                    id,
+                    name,
+                    types,
+                    hunt
+                };
+
+                const matchup = types.length
+                    ? speciesMatchup(view)
+                    : null;
+
+                const npc = npcSellStatsForSpecies(view);
+                const market = marketStatsForSpecies(view);
+
+                return {
+                    id,
+                    name,
+                    points: Math.max(
+                        1,
+                        Number(entry?.pontos || 1)
+                    ),
+                    types,
+                    captured: isCaptured(id),
+                    captureCount: captureCount(id),
+                    npcValue: Number(
+                        npc?.average || 0
+                    ),
+                    marketValue: Number(
+                        market?.average || 0
+                    ),
+                    offense: matchup?.offense
+                        ? {
+                            multiplier: Number(
+                                matchup.offense.multiplier
+                            ) || 1,
+                            attackType: String(
+                                matchup.offense.attackType || ''
+                            )
+                        }
+                        : null,
+                    defense: matchup?.defense
+                        ? {
+                            multiplier: Number(
+                                matchup.defense.multiplier
+                            ) || 1,
+                            attackType: String(
+                                matchup.defense.attackType || ''
+                            )
+                        }
+                        : null,
+                    matchupScore: Number.isFinite(
+                        bestMatchupScore(view)
+                    )
+                        ? bestMatchupScore(view)
+                        : null
+                };
+            });
+
+            return {
+                slug: String(
+                    hunt?.slug || ''
+                ),
+                name: String(
+                    hunt?.nome ||
+                    hunt?.name ||
+                    hunt?.slug ||
+                    ''
+                ),
+                level: Number(
+                    hunt?.nivel ||
+                    hunt?.level ||
+                    0
+                ) || 0,
+                area: String(
+                    hunt?.area ||
+                    ''
+                ),
+                unlocked: isUnlocked(hunt),
+                current: isHuntHere(
+                    hunt?.slug
+                ),
+                xp: {
+                    value: Number(
+                        xp?.value || 0
+                    ),
+                    pokemonValue: Number(
+                        xp?.pokemonValue || 0
+                    ),
+                    killsH: Number(
+                        xp?.killsH || 0
+                    ),
+                    killMs: Number(
+                        xp?.killMs || 0
+                    ),
+                    observed: Boolean(
+                        xp?.observed
+                    ),
+                    source: String(
+                        xp?.source ||
+                        'learning'
+                    ),
+                    samples: Number(
+                        xp?.samples || 0
+                    )
+                },
+                species
+            };
+        });
+
+        return {
+            version: 1,
+            playerLevel: Number(
+                state.playerLevel || 0
+            ),
+            currentHuntSlug:
+                state.currentHuntSlug || '',
+            typeStatus:
+                state.typeStatus || 'idle',
+            huntAmplification:
+                Number(
+                    state.huntAmplification || 1.5
+                ),
+            lead: lead
+                ? {
+                    id: Number(lead.id) || 0,
+                    speciesId: Number(
+                        lead.speciesId
+                    ) || 0,
+                    name: String(
+                        lead.nome ||
+                        lead.name ||
+                        ''
+                    ),
+                    level: Number(
+                        lead.level || 0
+                    ) || 0,
+                    types: leadTypes,
+                    attackTypes
+                }
+                : null,
+            hunts,
+            defaultFilters: defaultFilters()
+        };
+    }
+
+    page.__mothHuntAtlasControllerV1 = {
+        version: 1,
+        snapshot: controllerSnapshot
+    };
+
     function bootstrap() {
         injectStyles();
         ensureButton();
@@ -9747,7 +9933,7 @@
         );
 
         console.info(
-            '[PokéIdle Hunt Atlas] v1.6.1 loaded'
+            '[PokéIdle Hunt Atlas] v1.7.8 loaded'
         );
     }
 
