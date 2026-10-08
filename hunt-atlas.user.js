@@ -6,7 +6,7 @@
 // @supportURL   https://github.com/MOTHblank/pokeidle-huntatlas/issues
 // @downloadURL  https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
 // @updateURL    https://raw.githubusercontent.com/MOTHblank/pokeidle-huntatlas/main/hunt-atlas.user.js
-// @version      1.7.8
+// @version      1.7.9
 // @description  Hunt finder with measured lead-Pokémon combat speed and personalized trainer XP/hour ranking.
 // @match        https://pokeidle.io/app*
 // @grant        unsafeWindow
@@ -2906,6 +2906,63 @@
 
         if (full) {
             saveCache();
+        }
+    }
+
+    function syncFromControllerBridge() {
+        try {
+            const bridge = page.__mothControllerBridgeV1;
+            if (
+                !bridge ||
+                typeof bridge.gameSnapshot !== 'function'
+            ) {
+                return false;
+            }
+
+            const snapshot = bridge.gameSnapshot();
+            const gameState = snapshot?.state || {};
+
+            if (Array.isArray(snapshot?.hunts) && snapshot.hunts.length) {
+                state.hunts = snapshot.hunts.map(hunt => ({
+                    slug: String(hunt?.slug || ''),
+                    nome: String(hunt?.name || hunt?.slug || ''),
+                    nivel: Number(hunt?.level) || 0,
+                    especies: Array.isArray(hunt?.species)
+                        ? hunt.species.map(species => ({
+                            pokeId: Number(species?.id) || 0,
+                            nome: String(species?.name || '')
+                        }))
+                        : []
+                }));
+            }
+
+            if (gameState && typeof gameState === 'object') {
+                mergeState(
+                    {
+                        ...gameState,
+                        pokemons: Array.isArray(gameState.pokemons)
+                            ? gameState.pokemons
+                            : undefined,
+                        pokedex: gameState.pokedex || undefined,
+                    },
+                    false
+                );
+            }
+
+            if (
+                snapshot?.serverTypeChart &&
+                typeof snapshot.serverTypeChart === 'object'
+            ) {
+                state.serverTypeChart = snapshot.serverTypeChart;
+            }
+
+            if (state.hunts.length) {
+                ensureTypeData();
+            }
+
+            return true;
+        } catch {
+            return false;
         }
     }
 
@@ -9715,6 +9772,8 @@
 
 
     function controllerSnapshot() {
+        syncFromControllerBridge();
+
         const lead = leadPokemon();
 
         const leadTypes = lead
@@ -9918,6 +9977,7 @@
 
         setInterval(
             () => {
+                syncFromControllerBridge();
                 ensureButton();
 
                 if (
@@ -9944,7 +10004,7 @@
         );
 
         console.info(
-            '[PokéIdle Hunt Atlas] v1.7.8 loaded'
+            '[PokéIdle Hunt Atlas] v1.7.9 loaded'
         );
     }
 
