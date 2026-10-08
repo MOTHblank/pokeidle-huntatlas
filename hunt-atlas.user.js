@@ -6951,7 +6951,8 @@
                     comparison =
                         compareNumbers(
                             value(a),
-                            value(b)
+                            value(b),
+                            true
                         );
                 } else if (
                     sort === 'npc'
@@ -7007,7 +7008,8 @@
                             ),
                             bestMatchupScore(
                                 b
-                            )
+                            ),
+                            true
                         );
                 }
 
