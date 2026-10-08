@@ -9749,6 +9749,16 @@
                     state.typesBySpecies.get(id) || []
                 );
 
+                const weakTo = types.length
+                    ? STANDARD_TYPES.filter(
+                        attackType =>
+                            weaknessMultiplier(
+                                types,
+                                attackType
+                            ) > 1
+                    )
+                    : [];
+
                 const view = {
                     id,
                     name,
@@ -9771,6 +9781,7 @@
                         Number(entry?.pontos || 1)
                     ),
                     types,
+                    weakTo,
                     captured: isCaptured(id),
                     captureCount: captureCount(id),
                     npcValue: Number(
