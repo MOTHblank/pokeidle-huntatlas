@@ -2924,15 +2924,18 @@
 
             if (Array.isArray(snapshot?.hunts) && snapshot.hunts.length) {
                 state.hunts = snapshot.hunts.map(hunt => ({
+                    ...hunt,
                     slug: String(hunt?.slug || ''),
-                    nome: String(hunt?.name || hunt?.slug || ''),
-                    nivel: Number(hunt?.level) || 0,
-                    especies: Array.isArray(hunt?.species)
-                        ? hunt.species.map(species => ({
-                            pokeId: Number(species?.id) || 0,
-                            nome: String(species?.name || '')
-                        }))
-                        : []
+                    nome: String(hunt?.nome || hunt?.name || hunt?.slug || ''),
+                    nivel: Number(hunt?.nivel ?? hunt?.level) || 0,
+                    especies: Array.isArray(hunt?.especies)
+                        ? hunt.especies
+                        : Array.isArray(hunt?.species)
+                            ? hunt.species.map(species => ({
+                                pokeId: Number(species?.pokeId ?? species?.id) || 0,
+                                nome: String(species?.nome || species?.name || '')
+                            }))
+                            : []
                 }));
             }
 
