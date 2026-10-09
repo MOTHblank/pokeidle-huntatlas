@@ -6688,29 +6688,7 @@
     function bestMatchupScore(
         species
     ) {
-        const selectedWeaknesses =
-            Array.isArray(state.filters.weakness)
-                ? state.filters.weakness
-                : [];
-
-        const weaknessMarkup =
-            selectedWeaknesses
-                .map(attackType => {
-                    const multiplier = weaknessMultiplier(species.types, attackType);
-                    if (multiplier <= 1) {
-                        return '';
-                    }
-                    return '<span class="mha-matchup good mha-selected-weakness">' +
-                        escapeHtml(typeLabel(attackType)) + ' ' +
-                        escapeHtml(formatMultiplier(multiplier)) + '</span>';
-                })
-                .filter(Boolean)
-                .join('');
-
         const matchup =
-            speciesMatchup(
-                species
-            );        const matchup =
             speciesMatchup(
                 species
             );
@@ -9048,6 +9026,24 @@
                     )
                 )}</span></span>`;
 
+        const selectedWeaknesses =
+            Array.isArray(state.filters.weakness)
+                ? state.filters.weakness
+                : [];
+
+        const weaknessMarkup =
+            selectedWeaknesses
+                .map(attackType => {
+                    const multiplier = weaknessMultiplier(species.types, attackType);
+                    if (multiplier <= 1) {
+                        return '';
+                    }
+                    return '<span class="mha-matchup good mha-selected-weakness">' +
+                        escapeHtml(typeLabel(attackType)) + ' ' +
+                        escapeHtml(formatMultiplier(multiplier)) + '</span>';
+                })
+                .filter(Boolean)
+                .join('');
         const matchup =
             speciesMatchup(
                 species
